@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <title>Player 0 </title>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+
+    <button id="loadCaseButton">Load Published Case</button>
+     <input type="file" id="ztcadLoader" accept=".ztcad" style="display: none;" />
+    
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+
+
+  <!-- Vertex Shader -->
+<script id="jawShader-vertex" type="x-shader/x-vertex">
+precision highp float;
+
+attribute vec3 position;
+attribute vec3 normal;
+attribute vec2 uv;
+
+uniform mat4 worldViewProjection;
+
+varying vec3 vNormal;
+varying vec2 vUV;
+
+void main() {
+  vNormal = normal;
+  vUV = uv;
+  gl_Position = worldViewProjection * vec4(position, 1.0);
+} 
+
+
+</script>
+
+<!-- Fragment Shader -->
+<script id="jawShader-fragment" type="x-shader/x-fragment">
+precision highp float;
+
+uniform vec3 color;
+uniform float alpha;
+
+uniform sampler2D diffuseTexture;
+
+varying vec3 vNormal;
+varying vec2 vUV;
+
+void main() {
+  float light = dot(normalize(vNormal), normalize(vec3(0.5, 1.0, 0.8)));
+  light = clamp(light, 0.3, 1.0);
+
+  vec4 texColor = texture2D(diffuseTexture, vUV);
+
+  gl_FragColor = vec4(texColor.rgb * color * light, alpha);
+}
+
+
+</script>
+
+</body>
+
+</html>

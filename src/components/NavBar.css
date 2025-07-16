@@ -1,0 +1,247 @@
+/* NavBar.css */
+
+.header {
+     position: relative; /* or absolute/fixed if needed */
+       z-index: 10;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+    height: 65px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav {
+    display: flex;
+    width: 92%;
+    justify-content: space-between;
+    align-items: center;
+    height: 65px;
+}
+
+.leftside-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 65px;
+    width: 75%;
+    gap: 2rem;
+}
+
+.logo img{
+    width: 240px;
+    text-decoration: none;
+}
+
+.desktop-links a {
+    color: #555;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.desktop-links{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 62px;
+    width: 220px;
+}
+
+.desktop-links a{
+    display: flex;
+    align-items: center;
+    height: 62px;
+    font-weight: 500;
+}
+
+.desktop-links a:hover {
+    color: #3596d1; 
+    border-bottom: 4px solid #3596d1;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    width: 360px;
+    align-items: center;
+    margin-left: 1rem;
+}
+
+.top-dropdown:focus {
+    outline: none;
+    border-color: #ccc; /* same as your normal */
+    box-shadow: none;   /* remove blue shadow */
+}
+
+
+
+.top-button {
+    background: none;
+    border: 1px solid #3596d1;
+    color: #3596d1;
+    border-radius: 20px;
+    padding: 0.5rem 1.4rem;
+    font-size: 0.90rem;
+    cursor: pointer;
+}
+
+
+.top-button:hover {
+    background-color: #f0f8ff;
+}
+
+.top-dropdown {
+    font-size: 0.9rem;  
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 10px 5px 10px;
+    border-color: #e2dddd;
+    border-radius: 5px;
+    
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 0.4rem 2rem 0.4rem 0.6rem;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    cursor: pointer;
+
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='silver' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    background-size: 1rem;
+}
+
+
+.rightside-div {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.icon-bar .icon {
+    font-size: 1.5rem;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.icon-bar .icon:hover {
+    color: #3596d1;
+}
+
+
+
+
+
+/* RIGHT SIDE ICONS */
+.icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #e4e4e4;
+  box-shadow: 0 10px 10px rgba(0,0,0,0.15);
+  border-radius: 5px;
+  padding: 0.5rem;
+  z-index: 100;
+}
+
+.dropdown-menu-notification{
+    width: 300px;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 0.3rem 0.8rem;
+  color: #333;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.dropdown-menu a:hover {
+  background-color: #e9e8e8;
+}
+
+.icon-wrapper:hover .dropdown-menu {
+  display: block;
+}
+
+
+/* responsivness */
+@media (max-width: 768px) {
+  .desktop-links {
+    display: none; 
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logo img {
+    height: 36px;
+  }
+
+  .rightside-div {
+    gap: 0.5rem;
+  }
+
+  .nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Mobile View: 480px and below */
+@media (max-width: 480px) {
+  .header {
+    padding: 0.5rem 0;
+  }
+
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .top-button,
+  .top-dropdown {
+    width: 100%;
+  }
+
+  .icon {
+    font-size: 20px;
+  }
+
+  .logo img {
+    height: 30px;
+  }
+
+  .rightside-div {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .nav {
+    gap: 0.5rem;
+  }
+}
+
