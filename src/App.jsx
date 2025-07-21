@@ -3,12 +3,12 @@ import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 
 // Import your components
 import PlayerViewer from './components/PlayerViewer';
-import Converter from './components/Converter';
-import NavBar from './components/NavBar'; // Assuming you still have this
+// Converter is no longer imported because it's not used.
+import NavBar from './components/NavBar';
 
 /**
  * The AppLayout ensures your NavBar is on every page.
- * <Outlet> is where the child route (PlayerViewer or Converter) will be rendered.
+ * <Outlet> is where the child route (PlayerViewer) will be rendered.
  */
 const AppLayout = () => {
   return (
@@ -23,19 +23,18 @@ const AppLayout = () => {
 
 /**
  * The main App component that sets up the application's routing.
+ * We've un-commented this and simplified the routes.
  */
 const App = () => {
   return (
     // The BrowserRouter component enables routing.
-    // Every hook like `useNavigate` must be used within a component rendered by this.
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<AppLayout />}>
-          {/* Default page is the PlayerViewer */}
+          {/* Default page is the PlayerViewer. This is now the ONLY page. */}
           <Route index element={<PlayerViewer />} />
           
-          {/* Page for the "/converter" URL */}
-          <Route path="converter" element={<Converter />} />
+          {/* The Route for the "/converter" page has been completely removed. */}
         </Route>
       </Routes>
     </BrowserRouter>

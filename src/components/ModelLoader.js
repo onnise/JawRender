@@ -5,39 +5,30 @@ import {
   Color3,
   Effect,
   Texture,
-  Vector3
 } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF';
 import JSZip from 'jszip';
 
-
-// Note: JSZip library must be included in your index.html via a <script> tag for this to work.
-
-/**
- * Creates the custom shader material by reading GLSL code directly from script tags in the HTML.
- * This is more robust than relying on element names.
- */
 const createJawShaderMaterial = (scene, alpha = 1.0) => {
-  // Read shader code from the DOM
   const vertexShader = document.getElementById("jawShader-vertex")?.textContent;
   const fragmentShader = document.getElementById("jawShader-fragment")?.textContent;
-
+  
   if (!vertexShader || !fragmentShader) {
-    console.error("Could not find shader <script> tags in the HTML. Check the element IDs.");
+    console.error("Could not find shader <script> tags in the HTML.");
     return null;
   }
 
-  // Store shaders in Babylon's shader store, allowing them to be referenced by name.
-  Effect.ShadersStore["jawShaderVertexShader"] = vertexShader;
-  Effect.ShadersStore["jawShaderFragmentShader"] = fragmentShader;
+  if (!Effect.ShadersStore["jawShaderVertexShader"]) {
+    Effect.ShadersStore["jawShaderVertexShader"] = vertexShader;
+    Effect.ShadersStore["jawShaderFragmentShader"] = fragmentShader;
+  }
 
-  const shaderMat = new ShaderMaterial("jawShader", scene, {
-    vertex: "jawShader", // Reference the shader by the name given to the store
-    fragment: "jawShader",
+  const shaderMat = new ShaderMaterial("jawShader_" + Math.random(), scene, {
+    vertex: "jawShader", fragment: "jawShader",
   }, {
     attributes: ["position", "normal", "uv"],
-    uniforms: ["worldViewProjection", "world", "color", "alpha"], // 'world' is needed for correct lighting
-    samplers: ["diffuseTexture"], // Must declare samplers used by the shader
+    uniforms: ["worldViewProjection", "world", "color", "alpha"],
+    samplers: ["diffuseTexture"],
     needAlphaBlending: true
   });
 
@@ -45,153 +36,142 @@ const createJawShaderMaterial = (scene, alpha = 1.0) => {
   shaderMat.setFloat("alpha", alpha);
   shaderMat.backFaceCulling = false;
 
+  const noMipmaps = true;
+  const defaultWhiteTexture = new Texture(
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/epv2AAAAABJRU5ErkJggg==",
+    scene, noMipmaps, false, Texture.NEAREST_SAMPLINGMODE
+  );
+  shaderMat.setTexture("diffuseTexture", defaultWhiteTexture);
+  
   return shaderMat;
 };
 
-/**
- * Standardized processor that takes any array of loaded meshes, applies materials,
- * and organizes them into a consistent hierarchy (Full, Upper, Lower).
- */
+// --- CORRECTED LOGIC IS HERE ---
 const processAndOrganizeMeshes = (meshes, scene) => {
   const allMeshes = meshes.filter(mesh => mesh.geometry);
-  const rootNode = meshes[0]?.parent || meshes[0];
-
-  const upperJawGroup = new TransformNode("UpperJawGroup", scene);
-  const lowerJawGroup = new TransformNode("LowerJawGroup", scene);
-  const fullGroup = new TransformNode("FullModelGroup", scene);
-
-  const masterShaderMaterial = createJawShaderMaterial(scene);
-  if (!masterShaderMaterial) {
-    console.error("Aborting mesh processing: Shader material could not be created.");
-    return {};
-  }
+  const rootNodeFromGltf = meshes[0]?.parent || meshes[0];
+  const modelRoot = new TransformNode("ModelRoot", scene);
   
-  // A cache to create unique material instances for meshes with different textures
-  const materialCache = new Map();
+  // 1. Define all possible groups your models might have.
+  const groups = {
+    Full: new TransformNode("FullModelGroup", scene),
+    Upper: new TransformNode("UpperJawGroup", scene),
+    Lower: new TransformNode("LowerJawGroup", scene),
+    IdealTeeth: new TransformNode("IdealTeethGroup", scene),
+    OriginalTeeth: new TransformNode("OriginalTeethGroup", scene),
+    Brackets: new TransformNode("BracketsGroup", scene),
+  };
 
+  // 2. Create ONE unique material for each group that needs a slider.
+  const materials = {
+    Upper: createJawShaderMaterial(scene),
+    Lower: createJawShaderMaterial(scene),
+    IdealTeeth: createJawShaderMaterial(scene),
+    OriginalTeeth: createJawShaderMaterial(scene),
+    Brackets: createJawShaderMaterial(scene),
+    Default: createJawShaderMaterial(scene), // Fallback material
+  };
+  
+  // 3. Parent all groups to the master root.
+  Object.values(groups).forEach(group => group.parent = modelRoot);
+
+  // Process and sort each mesh.
   allMeshes.forEach(mesh => {
-    const name = mesh.name.toLowerCase();
-    const originalMaterial = mesh.material;
-    let newMaterial = masterShaderMaterial;
-
-    if (originalMaterial && originalMaterial.diffuseTexture) {
-      const textureUrl = originalMaterial.diffuseTexture.url;
-      if (materialCache.has(textureUrl)) {
-        newMaterial = materialCache.get(textureUrl);
-      } else {
-        newMaterial = masterShaderMaterial.clone(`${masterShaderMaterial.name}_${textureUrl}`);
-        newMaterial.setTexture("diffuseTexture", originalMaterial.diffuseTexture);
-        materialCache.set(textureUrl, newMaterial);
-      }
-    }
-    
-    mesh.material = newMaterial;
     mesh.setEnabled(true);
     mesh.isVisible = true;
 
-    if (name.includes('upper') || name.includes('gumu') || name.includes('teethu')) {
-      mesh.parent = upperJawGroup;
-    } else if (name.includes('lower') || name.includes('guml') || name.includes('teethl')) {
-      mesh.parent = lowerJawGroup;
+    const name = mesh.name.toLowerCase();
+    
+    // 4. Assign the mesh to a group AND give it that group's specific material.
+    if (name.includes('ideal')) {
+      mesh.parent = groups.IdealTeeth;
+      mesh.material = materials.IdealTeeth;
+    } else if (name.includes('original')) {
+      mesh.parent = groups.OriginalTeeth;
+      mesh.material = materials.OriginalTeeth;
+    } else if (name.includes('bracket')) {
+      mesh.parent = groups.Brackets;
+      mesh.material = materials.Brackets;
+    } else if (name.includes('ideal') || name.includes('target')) {
+      mesh.parent = groups.IdealTeeth;
+      mesh.material = materials.IdealTeeth;
+    } else if (name.includes('original') || name.includes('initial')) {
+      mesh.parent = groups.OriginalTeeth;
+      mesh.material = materials.OriginalTeeth;
+    } else if (name.includes('bracket') || name.includes('brace') || name.includes('wire')) {
+      mesh.parent = groups.Brackets;
+      mesh.material = materials.Brackets;
+    } 
+  
+    // We now check for ALL possible upper jaw names in one condition.
+    else if (name.includes('upper') || name.includes('maxilla') || name.includes('gumu') || name.includes('teethu') || name.includes('max')) {
+      mesh.parent = groups.Upper;
+      mesh.material = materials.Upper;
+    } 
+    // We do the same for all lower jaw names.
+    else if (name.includes('lower') || name.includes('mandible') || name.includes('guml') || name.includes('teethl') || name.includes('mand')) {
+      mesh.parent = groups.Lower;
+      mesh.material = materials.Lower;
     } else {
-      if(mesh.parent !== rootNode){
-         mesh.parent = fullGroup;
-      }
+      // Unsorted meshes go to the Full group and get the Default material
+      mesh.parent = groups.Full;
+      mesh.material = materials.Default;
     }
   });
 
-  // Parent the groups correctly to the model's root transform
-  if (rootNode) {
-    fullGroup.parent = rootNode;
-  }
-  
-  upperJawGroup.parent = fullGroup;
-  lowerJawGroup.parent = fullGroup;
-
-  // Return the organized structure for the GUI to interact with
-  return { Upper: upperJawGroup, Lower: lowerJawGroup, Full: fullGroup };
+  return { ...groups, MasterRoot: modelRoot };
 };
 
-/**
- * Handles the user's file selection, unzips the .ztcad, corrects the axis, 
- * loads the model, and then calls the processing function.
- */
-const loadPublishedCase = async (event, scene, onModelLoadedCallback) => {
-  const file = event.target.files?.[0];
-  if (!file) return;
 
+// The rest of the file remains the same...
+const loadGlbFromData = async (glbData, scene, onModelLoadedCallback) => {
+  let objectURL = null;
   try {
-    const zip = await JSZip.loadAsync(file);
-    let glbFile = null;
-    let tcadFile = null;
-
-    zip.forEach((_, zipEntry) => {
-      const entryName = zipEntry.name.toLowerCase();
-      if (entryName.endsWith('.glb')) glbFile = zipEntry;
-      if (entryName.endsWith('.tcad')) tcadFile = zipEntry;
-    });
-
-    if (!glbFile) throw new Error("Published case is invalid: No .glb file found.");
-    
-    // Read metadata to check for Z-up coordinate system
-    let upAxis = 'Y';
-    if (tcadFile) {
-      const tcadContent = await tcadFile.async('string');
-      if (tcadContent.toUpperCase().includes('Z')) {
-        upAxis = 'Z';
-      }
-    }
-
-    const glbData = await glbFile.async('uint8array');
-    const blob = new Blob([glbData], { type: "model/gltf-binary" });
-    const objectURL = URL.createObjectURL(blob);
-    
-    // Load the GLB data from the in-memory blob
-    const result = await SceneLoader.ImportMeshAsync(null, '', objectURL, scene, null, '.glb');
+    objectURL = URL.createObjectURL(glbData);
+    const result = await SceneLoader.ImportMeshAsync(null, "", objectURL, scene, null, ".glb");
     URL.revokeObjectURL(objectURL);
 
-    const rootNode = result.meshes[0];
-    if (rootNode && upAxis === 'Z') {
-      // Apply rotation to convert Z-up to Babylon's Y-up system
-      rootNode.rotation.x = -Math.PI / 2;
-    }
-    
-    // Process the newly loaded meshes to apply materials and organize them
     const organizedModels = processAndOrganizeMeshes(result.meshes, scene);
-    
-    // **Crucially, call the callback to notify the React component that we are done**
-    if (onModelLoadedCallback) {
-        onModelLoadedCallback(organizedModels);
-    }
-    
+    if (onModelLoadedCallback) onModelLoadedCallback(organizedModels);
   } catch (error) {
-    console.error("Failed to load published case:", error);
-    alert(`Error loading case: ${error.message}`);
+    console.error("Failed to load GLB data:", error);
+    alert(`Error loading GLB data. The file may be corrupt.\nDetails: ${error.message}`);
   }
 };
 
-/**
- * Main exported function. Initializes the file loader UI by attaching event listeners
- * and accepts a callback function to bridge communication back to the React component.
- */
-export const initializeCaseLoader = (scene, buttonId, inputId, onModelLoadedCallback) => {
-  const loadButton = document.getElementById(buttonId);
-  const fileInput = document.getElementById(inputId);
-
-  if (!loadButton || !fileInput) {
-    console.error("Loader initialization failed: Could not find UI elements. Check IDs.");
-    return;
+const loadPublishedCase = async (file, scene, onModelLoadedCallback) => {
+  try {
+    const zip = await JSZip.loadAsync(file);
+    const glbEntry = zip.file(/\.glb$/i)[0];
+    if (!glbEntry) throw new Error("No .glb file found inside the .ztcad archive.");
+    const glbBlob = await glbEntry.async('blob');
+    await loadGlbFromData(glbBlob, scene, onModelLoadedCallback);
+  } catch (error) {
+    console.error("Failed to load published case:", error);
+    alert(`Error loading .ztcad file.\nDetails: ${error.message}`);
   }
+};
 
-  const handleClick = () => fileInput.click();
-  const handleFileChange = (event) => loadPublishedCase(event, scene, onModelLoadedCallback);
+const loadModel = async (file, scene, onModelLoadedCallback) => {
+  const fileExtension = file.name.split('.').pop()?.toLowerCase();
+  if (fileExtension === 'ztcad') {
+    await loadPublishedCase(file, scene, onModelLoadedCallback);
+  } else if (fileExtension === 'glb') {
+    await loadGlbFromData(file, scene, onModelLoadedCallback);
+  } else {
+    alert('Unsupported file type. Please select a .ztcad or .glb file.');
+  }
+};
 
-  loadButton.addEventListener('click', handleClick);
-  fileInput.addEventListener('change', handleFileChange);
-
-  // Return a cleanup function to be called when the component unmounts
-  return () => {
-    loadButton.removeEventListener('click', handleClick);
-    fileInput.removeEventListener('change', handleFileChange);
+export const initializeCaseLoader = (scene, inputId, onModelLoadedCallback) => {
+  const fileInput = document.getElementById(inputId);
+  if (!fileInput) return;
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    loadModel(file, scene, onModelLoadedCallback);
+    event.target.value = '';
   };
+  fileInput.addEventListener('change', handleFileChange);
+  return () => fileInput.removeEventListener('change', handleFileChange);
 };
