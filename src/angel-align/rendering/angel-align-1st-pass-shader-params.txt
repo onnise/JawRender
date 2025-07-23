@@ -1,0 +1,273 @@
+Global
+name: drawArrays (Open help page)
+duration: 0
+status: Unknown
+Blend State
+BLEND: false
+BLEND_COLOR: 0, 0, 0, 0
+BLEND_DST_ALPHA: ONE_MINUS_SRC_ALPHA
+BLEND_DST_RGB: ONE_MINUS_SRC_ALPHA
+BLEND_EQUATION_ALPHA: FUNC_ADD
+BLEND_EQUATION_RGB: FUNC_ADD
+BLEND_SRC_ALPHA: SRC_ALPHA
+BLEND_SRC_RGB: SRC_ALPHA
+Color State
+COLOR_WRITEMASK: true, true, true, true
+Coverage State
+SAMPLE_ALPHA_TO_COVERAGE: false
+SAMPLE_COVERAGE: false
+SAMPLE_COVERAGE_INVERT: false
+SAMPLE_COVERAGE_VALUE: 1
+Cull State
+CULL_FACE: true
+CULL_FACE_MODE: BACK
+Depth State
+DEPTH_FUNC: LESS
+DEPTH_RANGE: 0, 1
+DEPTH_TEST: true
+DEPTH_WRITEMASK: true
+redundantCommandIds: 1, 5
+Draw Call
+attributes(0)
+arraySize: 3
+arrayType: FLOAT
+bufferBinding: WebGLBuffer - ID: 135
+bufferLength: -79375032
+bufferOffset: 79812864
+bufferSourceLength: 268435456
+bufferUsage: STATIC_DRAW
+divisor: 0
+enabled: true
+integer: false
+location: 0
+name: VertexPosition
+normalized: false
+offsetPointer: 0
+size: 1
+stride: 0
+type: FLOAT_VEC3
+vertexAttrib: 0, 0, 0, 1
+attributes(1)
+arraySize: 3
+arrayType: FLOAT
+bufferBinding: WebGLBuffer - ID: 137
+bufferLength: -65109376
+bufferOffset: 65547208
+bufferSourceLength: 268435456
+bufferUsage: STATIC_DRAW
+divisor: 0
+enabled: true
+integer: false
+location: 1
+name: VertexNormal
+normalized: false
+offsetPointer: 0
+size: 1
+stride: 0
+type: FLOAT_VEC3
+vertexAttrib: 0, 0, 0, 1
+frame Buffer
+color Attachments(0)
+alphaSize: 32
+blueSize: 32
+componentType: FLOAT
+depthSize: 0
+encoding: LINEAR
+format: RGBA
+greenSize: 32
+height: 620
+internalFormat: RGBA32F
+redSize: 32
+stencilSize: 0
+texture: WebGLTexture - ID: 53
+textureCubeMapFace: NONE
+textureLayer: 0
+textureLevel: 0
+textureType: FLOAT
+type: TEXTURE
+width: 1059
+color Attachments(1)
+alphaSize: 32
+blueSize: 32
+componentType: FLOAT
+depthSize: 0
+encoding: LINEAR
+format: RGBA
+greenSize: 32
+height: 620
+internalFormat: RGBA32F
+redSize: 32
+stencilSize: 0
+texture: WebGLTexture - ID: 54
+textureCubeMapFace: NONE
+textureLayer: 0
+textureLevel: 0
+textureType: FLOAT
+type: TEXTURE
+width: 1059
+color Attachments(2)
+alphaSize: 8
+blueSize: 8
+componentType: UNSIGNED_NORMALIZED_EXT
+depthSize: 0
+encoding: LINEAR
+format: RGBA
+greenSize: 8
+height: 620
+internalFormat: RGBA
+redSize: 8
+stencilSize: 0
+texture: WebGLTexture - ID: 55
+textureCubeMapFace: NONE
+textureLayer: 0
+textureLevel: 0
+textureType: UNSIGNED_BYTE
+type: TEXTURE
+width: 1059
+depth Attachment
+alphaSize: 0
+blueSize: 0
+buffer: WebGLRenderbuffer - ID: 0
+componentType: UNSIGNED_NORMALIZED_EXT
+depthSize: 24
+encoding: LINEAR
+greenSize: 0
+height: 620
+internalFormat: DEPTH_COMPONENT24
+msaaSamples: 0
+redSize: 0
+stencilSize: 0
+type: RENDERBUFFER
+width: 1059
+frameBuffer: WebGLFramebuffer - ID: 0
+program Status
+LINK_STATUS: true
+RECOMPILABLE: false
+VALIDATE_STATUS: false
+program: WebGLProgram - ID: 12
+shaders(0)
+COMPILE_STATUS: true
+name: Vertex
+shaderType: VERTEX_SHADER
+shaders(1)
+COMPILE_STATUS: true
+name: Fragment
+shaderType: FRAGMENT_SHADER
+uniformBlocks: Empty Array
+uniforms(0)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 287
+matrixStride: -1
+name: ModelMatrix
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT4
+value: -0.4745, -0.8775, -0.0692, 0, -0.8752, 0.4619, 0.1439, 0, -0.0943, 0.1289, -0.9872, 0, 26.9434, 10.3037, -7.8634, 1
+uniforms(1)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 288
+matrixStride: -1
+name: ModelViewMatrix
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT4
+value: 0.4745, 0.0692, 0.8775, 0, 0.8752, -0.1439, -0.4619, 0, 0.0943, 0.9872, -0.1289, 0, -27.1517, 7.9029, -140.1570, 1
+uniforms(2)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 289
+matrixStride: -1
+name: NormalMatrix
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT3
+value: 0.4745, 0.0692, 0.8775, 0.8752, -0.1439, -0.4619, 0.0943, 0.9872, -0.1289
+uniforms(3)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 290
+matrixStride: -1
+name: MVP
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT4
+value: 1.0367, 0.2583, -2.5545, -0.8775, 1.9123, -0.5371, 1.3445, 0.4619, 0.2061, 3.6842, 0.3751, 0.1289, -59.3252, 29.4942, 79.1163, 140.1570
+uniforms(4)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 291
+matrixStride: -1
+name: GeometryType
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT
+value: 1
+uniforms(5)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 292
+matrixStride: -1
+name: EnableClipPlane
+offset: -1
+rowMajor: false
+size: 1
+type: BOOL
+value: false
+uniforms(6)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 293
+matrixStride: -1
+name: ClipPlane
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC4
+value: 0, 0, 0, 1
+Draw State
+DITHER: true
+FRAGMENT_SHADER_DERIVATIVE_HINT: 4352
+FRAGMENT_SHADER_DERIVATIVE_HINT_OES: Extension OES_standard_derivatives is unavailable.
+FRONT_FACE: CCW
+RASTERIZER_DISCARD: false
+VIEWPORT: 0, 0, 1059, 620
+Polygon Offset State
+POLYGON_OFFSET_FACTOR: 0
+POLYGON_OFFSET_FILL: false
+POLYGON_OFFSET_UNITS: 0
+Scissor State
+SCISSOR_BOX: 0, 0, 300, 150
+SCISSOR_TEST: false
+Stencil State
+STENCIL_BACK_FAIL: KEEP
+STENCIL_BACK_FUNC: ALWAYS
+STENCIL_BACK_PASS_DEPTH_FAIL: KEEP
+STENCIL_BACK_PASS_DEPTH_PASS: KEEP
+STENCIL_BACK_REF: 0
+STENCIL_BACK_VALUE_MASK: 2147483647 (0b1111111111111111111111111111111)
+STENCIL_BACK_WRITEMASK: 2147483647 (0b1111111111111111111111111111111)
+STENCIL_BITS: 0
+STENCIL_FAIL: KEEP
+STENCIL_FUNC: ALWAYS
+STENCIL_PASS_DEPTH_FAIL: KEEP
+STENCIL_PASS_DEPTH_PASS: KEEP
+STENCIL_REF: 0
+STENCIL_TEST: false
+STENCIL_VALUE_MASK: 2147483647 (0b1111111111111111111111111111111)
+STENCIL_WRITEMASK: 2147483647 (0b1111111111111111111111111111111)
+command Arguments
+0: 4
+1: 0
+2: 36486
+stack Trace
+0: _glDrawArrays (eval at v (https://iweb.angelalign.com/packs/simulator/b5ba1f9730a58a58b7db3ec821c1a4acdd6236ed/js/chunk.8206c9d83eb4886dfc7d.js:1:1), <anonymous>:4:122346)
+1: wasm://wasm/023c30c2:wasm-function[8559]:0x4388b7
+2: wasm://wasm/023c30c2:wasm-function[8172]:0x424305
+3: wasm://wasm/023c30c2:wasm-function[12539]:0x53a46c

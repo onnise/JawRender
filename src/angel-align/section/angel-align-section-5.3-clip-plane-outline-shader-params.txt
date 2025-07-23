@@ -1,0 +1,216 @@
+Global
+name: drawArrays (Open help page)
+duration: 0
+status: Unknown
+Blend State
+BLEND: true
+BLEND_COLOR: 0, 0, 0, 0
+BLEND_DST_ALPHA: ONE_MINUS_SRC_ALPHA
+BLEND_DST_RGB: ONE_MINUS_SRC_ALPHA
+BLEND_EQUATION_ALPHA: FUNC_ADD
+BLEND_EQUATION_RGB: FUNC_ADD
+BLEND_SRC_ALPHA: SRC_ALPHA
+BLEND_SRC_RGB: SRC_ALPHA
+Color State
+COLOR_WRITEMASK: true, true, true, true
+Coverage State
+SAMPLE_ALPHA_TO_COVERAGE: false
+SAMPLE_COVERAGE: false
+SAMPLE_COVERAGE_INVERT: false
+SAMPLE_COVERAGE_VALUE: 1
+Cull State
+CULL_FACE: true
+CULL_FACE_MODE: BACK
+Depth State
+DEPTH_FUNC: LESS
+DEPTH_RANGE: 0, 1
+DEPTH_TEST: true
+DEPTH_WRITEMASK: true
+Draw Call
+attributes(0)
+arraySize: 3
+arrayType: FLOAT
+bufferBinding: WebGLBuffer - ID: 495
+bufferLength: -114580600
+bufferOffset: 114580648
+bufferSourceLength: 268435456
+bufferUsage: STATIC_DRAW
+divisor: 0
+enabled: true
+integer: false
+location: 0
+name: VertexPosition
+normalized: false
+offsetPointer: 0
+size: 1
+stride: 0
+type: FLOAT_VEC3
+vertexAttrib: 0, 0, 0, 1
+frameBuffer: null
+program Status
+LINK_STATUS: true
+RECOMPILABLE: false
+VALIDATE_STATUS: false
+program: WebGLProgram - ID: 7
+shaders(0)
+COMPILE_STATUS: true
+name: Vertex
+shaderType: VERTEX_SHADER
+shaders(1)
+COMPILE_STATUS: true
+name: Fragment
+shaderType: FRAGMENT_SHADER
+uniformBlocks: Empty Array
+uniforms(0)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 4826
+matrixStride: -1
+name: MVP
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT4
+value: -0.0006, -0.0102, 0.0145, 0, 0.0054, 0.0082, 0.0171, 0, 0.0227, -0.0022, -0.0037, 0, -0.1355, -0.1757, -0.3899, 1
+uniforms(1)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 4827
+matrixStride: -1
+name: VertexColor
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC4
+value: 0.1330, 0.7294, 0.8353, 1
+uniforms(2)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 4828
+matrixStride: -1
+name: IPRLine
+offset: -1
+rowMajor: false
+size: 1
+type: BOOL
+value: false
+uniforms(3)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 4829
+matrixStride: -1
+name: ModelViewMatrix
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT4
+value: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+uniforms(4)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 4830
+matrixStride: -1
+name: ProjectionMatrix
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT4
+value: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+uniforms(5)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 4831
+matrixStride: -1
+name: ViewPort
+offset: -1
+rowMajor: false
+size: 4
+type: FLOAT
+values(0)
+value: 0
+values(1)
+value: 0
+values(2)
+value: 0
+values(3)
+value: 0
+uniforms(6)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 4832
+matrixStride: -1
+name: RectPoint
+offset: -1
+rowMajor: false
+size: 4
+type: FLOAT_VEC2
+values(0)
+value: 0, 0
+values(1)
+value: 0, 0
+values(2)
+value: 0, 0
+values(3)
+value: 0, 0
+uniforms(7)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 4833
+matrixStride: -1
+name: LeftTopZero
+offset: -1
+rowMajor: false
+size: 1
+type: BOOL
+value: false
+uniforms(8)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 4834
+matrixStride: -1
+name: Perspective
+offset: -1
+rowMajor: false
+size: 1
+type: BOOL
+value: false
+Draw State
+DITHER: true
+FRAGMENT_SHADER_DERIVATIVE_HINT: 4352
+FRAGMENT_SHADER_DERIVATIVE_HINT_OES: Extension OES_standard_derivatives is unavailable.
+FRONT_FACE: CCW
+RASTERIZER_DISCARD: false
+VIEWPORT: 0, 0, 706, 1241
+Polygon Offset State
+POLYGON_OFFSET_FACTOR: 0
+POLYGON_OFFSET_FILL: false
+POLYGON_OFFSET_UNITS: 0
+Scissor State
+SCISSOR_BOX: 0, 0, 300, 150
+SCISSOR_TEST: false
+Stencil State
+STENCIL_BACK_FAIL: KEEP
+STENCIL_BACK_FUNC: ALWAYS
+STENCIL_BACK_PASS_DEPTH_FAIL: KEEP
+STENCIL_BACK_PASS_DEPTH_PASS: KEEP
+STENCIL_BACK_REF: 0
+STENCIL_BACK_VALUE_MASK: 2147483647 (0b1111111111111111111111111111111)
+STENCIL_BACK_WRITEMASK: 2147483647 (0b1111111111111111111111111111111)
+STENCIL_BITS: 0
+STENCIL_FAIL: KEEP
+STENCIL_FUNC: ALWAYS
+STENCIL_PASS_DEPTH_FAIL: KEEP
+STENCIL_PASS_DEPTH_PASS: KEEP
+STENCIL_REF: 0
+STENCIL_TEST: false
+STENCIL_VALUE_MASK: 2147483647 (0b1111111111111111111111111111111)
+STENCIL_WRITEMASK: 2147483647 (0b1111111111111111111111111111111)
+command Arguments
+0: 2
+1: 0
+2: 4
+stack Trace
+0: _glDrawArrays (eval at v (https://iweb.angelalign.com/packs/simulator/b5ba1f9730a58a58b7db3ec821c1a4acdd6236ed/js/chunk.8206c9d83eb4886dfc7d.js:1:1), <anonymous>:4:122346)
+1: wasm://wasm/023c30c2:wasm-function[8559]:0x4388b7
+2: wasm://wasm/023c30c2:wasm-function[8172]:0x424305
+3: wasm://wasm/023c30c2:wasm-function[12540]:0x53a583

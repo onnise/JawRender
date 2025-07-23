@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<AdaptiveUnitOperParameters> 
+  <attachment name="A6_occlusal_pad" attachName_Lib = "A6_occlusal_pad_adaptive" meshID_Lib ="multi_A6_occlusal_pad_adaptive_id_0" meshID_Lib_flat ="multi_A6_occlusal_pad_adaptive_id_1">
+	<upperAttach meshID = "A6_occlusal_pad_adaptive_id_1">
+		<attachParam width = "6.5" height = "5.976" length = "15.624" baseHeight ="3.614" frontLength = "3.602" backLength = "11.994"/>
+		<ctrlPoint indexList="569,567,636,600" centerPoint = "-0.01855,-2.0698,3.16735"/>
+	</upperAttach>
+	<lowerLeftAttach meshID = "A6_occlusal_pad_adaptive_id_2">
+		<attachParam width = "6.545" height = "5.976" length = "5.174" baseHeight ="3.614"  frontLength = "2.667" backLength = "2.51" />
+		<ctrlPoint indexList="388,428,447,432" centerPoint = "0.4393, 1.8736, -2.2852" /> 
+	</lowerLeftAttach>
+    <lowerRightAttach meshID = "A6_occlusal_pad_adaptive_id_3">
+		<!--<attachParam width = "6.328" height = "5.147" length = "5.176" frontLength = "2.667" backLength = "2.51" />-->
+		<ctrlPoint indexList="428,388,432,447" centerPoint = "0.4393, 1.8736, -2.2852" /> 
+	</lowerRightAttach>
+  <upperAttachFlat meshID = "A6_occlusal_pad_adaptive_id_4">
+    <attachParam width = "6.5" height = "5.136" length = "18.332" baseHeight ="4.584" frontLength = "3.602" backLength = "11.994"/>
+    <ctrlPoint indexList="3439,3434,3435,485" centerPoint = "-0.01855,-2.0698,3.16735"/>
+  </upperAttachFlat>
+	<plateAttach meshID = "A6_occlusal_pad_adaptive_id_0">
+		<attachParam diameter = "0.8" spaceDistance = "1.24"/>
+	</plateAttach>
+	<attachRule>
+		<param planeDistance = "1.5" minHeight = "3.0" maxHeight = "10.0" minWidth = "4.5" leftStartTooth = "4" rightStartTooth = "4" OverlapMinWarningThreshold ="2.0"/>
+	</attachRule>
+  </attachment>
+</AdaptiveUnitOperParameters>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<AdaptiveAttachmentParameters> 
+<attachment name="AngelButton" attachName_Lib = "button_hook" meshID_Lib ="button_hook_id_0">
+  <Euler>
+    <Pitch MinAngle = "5" MolarMax="30"/><!--俯仰角最小值,磨牙颊侧仰角最大值-->
+    <Yaw MaxAngel = "30"/><!--天使扣与牙弓法线夹角最大值-->
+    <YawGap MaxAngel = "30"/><!--牙齿间隙天使扣与牙弓法线夹角最大值-->
+  </Euler>
+  <Placed>
+    <OutCrop value ="1.5"/> <!--露台高度最大值-->
+    <OutCropGap minValue ="0.5"/><!--待定-->
+    <BiteDepth maxValue ="0.4" /><!--最大咬合深度-->
+    <Dis2Physical value ="0.8" /><!--与实体附件安全距离-->
+    <ProjectedR value ="1.0"/> <!--邻间投影碰撞直径扩大值-->
+    <Platen2ToothSurface_Gap minValue ="0.5"/> <!--间隙天使扣凸出高度延伸-->
+  </Placed>
+</attachment>
+<attachment name="AngelButton" attachName_Lib = "button_hook" meshID_Lib ="button_hook_id_0">
+  <Euler>
+    <Pitch MinAngle = "5" MolarMax="30"/><!--俯仰角最小值,磨牙颊侧仰角最大值-->
+    <Yaw MaxAngel = "30"/><!--天使扣与牙弓法线夹角最大值-->
+  </Euler>
+  <Placed>
+    <OutCrop value ="1.5"/> <!--露台高度最大值-->
+    <OutCropGap minValue ="0.5"/><!--待定-->
+    <BiteDepth maxValue ="0.4" /><!--最大咬合深度-->
+    <Dis2Physical value ="0.8" /><!--与实体附件安全距离-->
+    <ProjectedR value ="1.0"/> <!--邻间投影碰撞直径扩大值-->
+    <Platen2ToothSurface_Gap minValue ="0.5"/> <!--间隙天使扣凸出高度延伸-->
+  </Placed>
+</attachment>
+</AdaptiveAttachmentParameters>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<VirtualToothParameters> 
+  
+  <attachment name="Pontic" attachName_Lib = "pontic_adaptive" meshID_Lib ="">
+	<XLimit>1.2</XLimit>
+	<MinGap>3.5</MinGap>
+	<MinHeight>2.0</MinHeight>
+	<MoveLimitCount>10</MoveLimitCount>
+	<RotateLimitCount>15</RotateLimitCount>
+	<ShortLimitCount>5</ShortLimitCount>
+	<MoveStep>0.3</MoveStep>
+	<RotateStep>1</RotateStep>
+	<ShortStep>0.1</ShortStep>
+	<ShareRot>1</ShareRot>
+	<ShareMov>0</ShareMov>
+	<TorqueTipsValues>
+		<!-- torque: 转矩；tips:轴倾-->
+		<Standard ID="1" Name="标准1" IsActive="false">
+			<TorqueTips toothID="11" Torque="7.0" Tips="5.0" />
+			<TorqueTips toothID="12" Torque="3.0" Tips="9.0" />
+			<TorqueTips toothID="13" Torque="-7.0" Tips="11.0" />
+			<TorqueTips toothID="14" Torque="-7.0" Tips="2.0" />
+			<TorqueTips toothID="15" Torque="-7.0" Tips="2.0" />
+			<TorqueTips toothID="16" Torque="-9.0" Tips="-3.0" />
+			<TorqueTips toothID="17" Torque="-9.0" Tips="5.0" />
+			<TorqueTips toothID="21" Torque="7.0" Tips="5.0" />
+			<TorqueTips toothID="22" Torque="3.0" Tips="9.0" />
+			<TorqueTips toothID="23" Torque="-7.0" Tips="11.0" />
+			<TorqueTips toothID="24" Torque="-7.0" Tips="2.0" />
+			<TorqueTips toothID="25" Torque="-7.0" Tips="2.0" />
+			<TorqueTips toothID="26" Torque="-9.0" Tips="-3.0" />
+			<TorqueTips toothID="27" Torque="-9.0" Tips="5.0" />
+			<TorqueTips toothID="31" Torque="-1.0" Tips="2.0" />
+			<TorqueTips toothID="32" Torque="-1.0" Tips="2.0" />
+			<TorqueTips toothID="33" Torque="-11.0" Tips="5.0" />
+			<TorqueTips toothID="34" Torque="-17.0" Tips="2.0" />
+			<TorqueTips toothID="35" Torque="-22.0" Tips="2.0" />
+			<TorqueTips toothID="36" Torque="-30.0" Tips="2.0" />
+			<TorqueTips toothID="37" Torque="-35.0" Tips="2.0" />
+			<TorqueTips toothID="41" Torque="-1.0" Tips="2.0" />
+			<TorqueTips toothID="42" Torque="-1.0" Tips="2.0" />
+			<TorqueTips toothID="43" Torque="-11.0" Tips="5.0" />
+			<TorqueTips toothID="44" Torque="-17.0" Tips="2.0" />
+			<TorqueTips toothID="45" Torque="-22.0" Tips="2.0" />
+			<TorqueTips toothID="46" Torque="-30.0" Tips="2.0" />
+			<TorqueTips toothID="47" Torque="-35.0" Tips="2.0" />
+		</Standard>	
+	</TorqueTipsValues>
+	<RadiusMap>
+		<Normal>1.0f</Normal>
+		<Concave1>3</Concave1>
+		<Concave2>5</Concave2>
+		<Concave3>7</Concave3>
+		<Concave4>20</Concave4>
+		<Concave5>-0.8</Concave5>
+		<Concave6>-0.5</Concave6>
+		<Concave7>-0.3</Concave7>
+		<Concave8>-0.1</Concave8>
+		<Convex1>0.7</Convex1>
+		<Convex2>0.5</Convex2>
+		<Convex3>0.3</Convex3>
+		<Convex4>0.2</Convex4>
+		<Convex5>0.1</Convex5>
+	</RadiusMap>
+</attachment>
+
+</VirtualToothParameters>

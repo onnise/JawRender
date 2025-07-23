@@ -1,0 +1,523 @@
+input texture 24: gums base color
+input texture 25: reflection
+input texture 25: 3rd pass result (ssao)
+
+Global
+name: drawArrays (Open help page)
+duration: 0
+status: Unknown
+Blend State
+BLEND: false
+BLEND_COLOR: 0, 0, 0, 0
+BLEND_DST_ALPHA: ONE_MINUS_SRC_ALPHA
+BLEND_DST_RGB: ONE_MINUS_SRC_ALPHA
+BLEND_EQUATION_ALPHA: FUNC_ADD
+BLEND_EQUATION_RGB: FUNC_ADD
+BLEND_SRC_ALPHA: SRC_ALPHA
+BLEND_SRC_RGB: SRC_ALPHA
+Color State
+COLOR_WRITEMASK: true, true, true, true
+Coverage State
+SAMPLE_ALPHA_TO_COVERAGE: false
+SAMPLE_COVERAGE: false
+SAMPLE_COVERAGE_INVERT: false
+SAMPLE_COVERAGE_VALUE: 1
+Cull State
+CULL_FACE: true
+CULL_FACE_MODE: BACK
+Depth State
+DEPTH_FUNC: LESS
+DEPTH_RANGE: 0, 1
+DEPTH_TEST: true
+DEPTH_WRITEMASK: true
+Draw Call
+attributes(0)
+arraySize: 3
+arrayType: FLOAT
+bufferBinding: WebGLBuffer - ID: 380
+bufferLength: -144731224
+bufferOffset: 144924832
+bufferSourceLength: 268435456
+bufferUsage: STATIC_DRAW
+divisor: 0
+enabled: true
+integer: false
+location: 0
+name: position
+normalized: false
+offsetPointer: 0
+size: 1
+stride: 0
+type: FLOAT_VEC3
+vertexAttrib: 0, 0, 0, 1
+attributes(1)
+arraySize: 3
+arrayType: FLOAT
+bufferBinding: WebGLBuffer - ID: 381
+bufferLength: -144924840
+bufferOffset: 145118448
+bufferSourceLength: 268435456
+bufferUsage: STATIC_DRAW
+divisor: 0
+enabled: true
+integer: false
+location: 1
+name: normal
+normalized: false
+offsetPointer: 0
+size: 1
+stride: 0
+type: FLOAT_VEC3
+vertexAttrib: 0, 0, 0, 1
+attributes(2)
+arraySize: 2
+arrayType: FLOAT
+bufferBinding: WebGLBuffer - ID: 379
+bufferLength: -144279448
+bufferOffset: 144408520
+bufferSourceLength: 268435456
+bufferUsage: STATIC_DRAW
+divisor: 0
+enabled: true
+integer: false
+location: 2
+name: uv
+normalized: false
+offsetPointer: 0
+size: 1
+stride: 0
+type: FLOAT_VEC2
+vertexAttrib: 0, 0, 0, 1
+attributes(3)
+arraySize: 4
+arrayType: FLOAT
+bufferBinding: WebGLBuffer - ID: 132
+bufferLength: -144650728
+bufferOffset: 144908872
+bufferSourceLength: 268435456
+bufferUsage: STATIC_DRAW
+divisor: 0
+enabled: true
+integer: false
+location: 3
+name: tangent
+normalized: false
+offsetPointer: 0
+size: 1
+stride: 0
+type: FLOAT_VEC4
+vertexAttrib: 0, 0, 0, 1
+frameBuffer: null
+program Status
+LINK_STATUS: true
+RECOMPILABLE: false
+VALIDATE_STATUS: false
+program: WebGLProgram - ID: 3
+shaders(0)
+COMPILE_STATUS: true
+name: Vertex
+shaderType: VERTEX_SHADER
+shaders(1)
+COMPILE_STATUS: true
+name: Fragment
+shaderType: FRAGMENT_SHADER
+uniformBlocks: Empty Array
+uniforms(0)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 552
+matrixStride: -1
+name: modelViewMatrix
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT4
+value: -1, 0, 0, 0, 0, 0.0000, -1, 0, 0, -1, 0.0000, 0, -0.2083, 0.0396, -129.8532, 1
+uniforms(1)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 553
+matrixStride: -1
+name: projectionMatrix
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT4
+value: 2.1857, 0, 0, 0, 0, 3.7321, 0, 0, 0, 0, -2.9110, -1, 0, 0, -328.8805, 0
+uniforms(2)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 554
+matrixStride: -1
+name: normalMatrix
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT3
+value: -1, 0, 0, 0, 0.0000, -1, 0, -1, 0.0000
+uniforms(3)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 555
+matrixStride: -1
+name: invertViewMatrix
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_MAT4
+value: -1, 0, 0, 0, 0, -0.0000, -1, 0, 0, -1, -0.0000, 0, -0.2083, -129.8532, 0.0396, 1
+uniforms(4)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 556
+matrixStride: -1
+name: enableClipPlane
+offset: -1
+rowMajor: false
+size: 1
+type: BOOL
+value: false
+uniforms(5)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 557
+matrixStride: -1
+name: clipPlane
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC4
+value: 0, 0, 0, 1
+uniforms(6)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 558
+matrixStride: -1
+name: pointLights[0].position
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC3
+value: 0, 0, 4
+uniforms(7)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 559
+matrixStride: -1
+name: pointLights[0].color
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC3
+value: 0.3922, 0.3922, 0.3922
+uniforms(8)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 560
+matrixStride: -1
+name: pointLights[1].position
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC3
+value: -2, 0, -4
+uniforms(9)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 561
+matrixStride: -1
+name: pointLights[1].color
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC3
+value: 0.0196, 0.0196, 0.0196
+uniforms(10)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 562
+matrixStride: -1
+name: pointLights[2].position
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC3
+value: 2, 0, -4
+uniforms(11)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 563
+matrixStride: -1
+name: pointLights[2].color
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC3
+value: 0.0196, 0.0196, 0.0196
+uniforms(12)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 564
+matrixStride: -1
+name: diffuse
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC3
+value: 1, 1, 1
+uniforms(13)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 565
+matrixStride: -1
+name: opacity
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT
+value: 1
+uniforms(14)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 566
+matrixStride: -1
+name: ambientLightColor
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT_VEC3
+value: 0.6235, 0.6039, 0.6039
+uniforms(15)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 567
+matrixStride: -1
+name: ambientReflectionFactor
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT
+value: 0.6500
+uniforms(16)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 568
+matrixStride: -1
+name: selfIllumination
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT
+value: 0
+uniforms(17)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 569
+matrixStride: -1
+name: glossiness
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT
+value: 0.5000
+uniforms(18)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 570
+matrixStride: -1
+name: reflectivity
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT
+value: 0.6000
+uniforms(19)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 571
+matrixStride: -1
+name: shineFactor
+offset: -1
+rowMajor: false
+size: 1
+type: FLOAT
+value: 1.8000
+uniforms(20)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 572
+matrixStride: -1
+name: enableTexture
+offset: -1
+rowMajor: false
+size: 1
+type: BOOL
+value: true
+uniforms(21)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 573
+matrixStride: -1
+name: diffuseMap
+offset: -1
+rowMajor: false
+size: 1
+texture
+anisotropy: 1
+baseLevel: 0
+compareFunc: LEQUAL
+compareMode: NONE
+format: RGBA
+height: 2048
+immutable: false
+immutableLevels: 0
+internalFormat: RGBA
+magFilter: LINEAR
+maxLevel: 1000
+maxLod: 1000
+minFilter: LINEAR
+minLod: -1000
+textureType: UNSIGNED_BYTE
+TEXTURE_2D
+width: 2048
+wrapR: REPEAT
+wrapS: REPEAT
+wrapT: REPEAT
+type: SAMPLER_2D
+value: 0
+uniforms(22)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 574
+matrixStride: -1
+name: reflectMap
+offset: -1
+rowMajor: false
+size: 1
+texture
+anisotropy: 1
+baseLevel: 0
+compareFunc: LEQUAL
+compareMode: NONE
+format: RGBA
+height: 256
+immutable: false
+immutableLevels: 0
+internalFormat: RGBA
+magFilter: LINEAR
+maxLevel: 1000
+maxLod: 1000
+minFilter: LINEAR
+minLod: -1000
+textureType: UNSIGNED_BYTE
+TEXTURE_2D
+width: 256
+wrapR: REPEAT
+wrapS: REPEAT
+wrapT: REPEAT
+type: SAMPLER_2D
+value: 1
+uniforms(23)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 575
+matrixStride: -1
+name: specularMap
+offset: -1
+rowMajor: false
+size: 1
+texture
+anisotropy: 1
+baseLevel: 0
+compareFunc: LEQUAL
+compareMode: NONE
+format: RGBA
+height: 2048
+immutable: false
+immutableLevels: 0
+internalFormat: RGBA
+magFilter: LINEAR
+maxLevel: 1000
+maxLod: 1000
+minFilter: LINEAR
+minLod: -1000
+textureType: UNSIGNED_BYTE
+TEXTURE_2D
+width: 2048
+wrapR: REPEAT
+wrapS: REPEAT
+wrapT: REPEAT
+type: SAMPLER_2D
+value: 2
+uniforms(24)
+arrayStride: -1
+blockIndice: -1
+location: WebGLUniformLocation - ID: 576
+matrixStride: -1
+name: normalMap
+offset: -1
+rowMajor: false
+size: 1
+texture
+anisotropy: 1
+baseLevel: 0
+compareFunc: LEQUAL
+compareMode: NONE
+format: RGBA
+height: 512
+immutable: false
+immutableLevels: 0
+internalFormat: RGBA
+magFilter: LINEAR
+maxLevel: 1000
+maxLod: 1000
+minFilter: LINEAR
+minLod: -1000
+textureType: UNSIGNED_BYTE
+TEXTURE_2D
+width: 512
+wrapR: REPEAT
+wrapS: REPEAT
+wrapT: REPEAT
+type: SAMPLER_2D
+value: 3
+Draw State
+DITHER: true
+FRAGMENT_SHADER_DERIVATIVE_HINT: 4352
+FRAGMENT_SHADER_DERIVATIVE_HINT_OES: Extension OES_standard_derivatives is unavailable.
+FRONT_FACE: CCW
+RASTERIZER_DISCARD: false
+VIEWPORT: 0, 0, 2119, 1241
+Polygon Offset State
+POLYGON_OFFSET_FACTOR: 0
+POLYGON_OFFSET_FILL: false
+POLYGON_OFFSET_UNITS: 0
+Scissor State
+SCISSOR_BOX: 0, 0, 300, 150
+SCISSOR_TEST: false
+Stencil State
+STENCIL_BACK_FAIL: KEEP
+STENCIL_BACK_FUNC: ALWAYS
+STENCIL_BACK_PASS_DEPTH_FAIL: KEEP
+STENCIL_BACK_PASS_DEPTH_PASS: KEEP
+STENCIL_BACK_REF: 0
+STENCIL_BACK_VALUE_MASK: 2147483647 (0b1111111111111111111111111111111)
+STENCIL_BACK_WRITEMASK: 2147483647 (0b1111111111111111111111111111111)
+STENCIL_BITS: 0
+STENCIL_FAIL: KEEP
+STENCIL_FUNC: ALWAYS
+STENCIL_PASS_DEPTH_FAIL: KEEP
+STENCIL_PASS_DEPTH_PASS: KEEP
+STENCIL_REF: 0
+STENCIL_TEST: false
+STENCIL_VALUE_MASK: 2147483647 (0b1111111111111111111111111111111)
+STENCIL_WRITEMASK: 2147483647 (0b1111111111111111111111111111111)
+command Arguments
+0: 4
+1: 0
+2: 16134
+stack Trace
+0: _glDrawArrays (eval at v (https://iweb.angelalign.com/packs/simulator/b5ba1f9730a58a58b7db3ec821c1a4acdd6236ed/js/chunk.8206c9d83eb4886dfc7d.js:1:1), <anonymous>:4:122346)
+1: wasm://wasm/023c30c2:wasm-function[8559]:0x4388b7
+2: wasm://wasm/023c30c2:wasm-function[8172]:0x424305
+3: wasm://wasm/023c30c2:wasm-function[12540]:0x53a583
