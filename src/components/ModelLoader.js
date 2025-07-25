@@ -9,10 +9,10 @@ import {
 } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF';
 import JSZip from 'jszip';
-import { parseShaderFile } from './shaderUtils'; // You must have this utility file
-import gBufferShaderCode from '../angel-align/rendering/angel-align-1st-pass-shader.glsl?raw'; // Ensure this path is correct
+import { parseShaderFile } from './shaderUtils';
+import gBufferShaderCode from '../angel-align/rendering/angel-align-1st-pass-shader.glsl?raw'; 
 
-// This function creates the material for your actual G-Buffer shader
+// This function creates the material for our actual G-Buffer shader
 const createGBufferMaterial = (scene) => {
   console.log("--- Creating REAL G-Buffer Material from external GLSL file ---");
   const parsedShader = parseShaderFile(gBufferShaderCode);
@@ -30,37 +30,42 @@ const createGBufferMaterial = (scene) => {
   },
   {
     attributes: ["position", "normal"],
-    // We MUST declare EVERY uniform that your GLSL shader expects by its exact name
+    // We MUST declare EVERY uniform that our GLSL shader expects by its exact name
+    // uniforms: [
+    //     "world", "worldView", "worldViewProjection", // Standard Babylon matrices
+    //     "ModelMatrix", "ModelViewMatrix", "NormalMatrix", "MVP", //  custom uniforms
+    //     "GeometryType", "EnableClipPlane", "ClipPlane"
+    // ],
     uniforms: [
-        "world", "worldView", "worldViewProjection", // Standard Babylon matrices
-        "ModelMatrix", "ModelViewMatrix", "NormalMatrix", "MVP", // YOUR custom uniforms
-        "GeometryType", "EnableClipPlane", "ClipPlane"
+        "world", "view", "projection", "worldViewProjection", // Babylon will handle these
+        "GeometryType", // Our only custom uniform that we set manually
     ],
   });
 
-  // THE "GLUE": This function manually links Babylon's matrices to your shader's custom names
-  shaderMaterial.onBind = (mesh) => {
-      const effect = shaderMaterial.getEffect();
-      if (!effect) return;
+  // THE "GLUE": This function manually links Babylon's matrices to my shader's custom names
+  // shaderMaterial.onBind = (mesh) => {
+  //     const effect = shaderMaterial.getEffect();
+  //     if (!effect) return;
 
-      const worldMatrix = mesh.getWorldMatrix();
+  //     const worldMatrix = mesh.getWorldMatrix();
       
-      effect.setMatrix("ModelMatrix", worldMatrix);
-      effect.setMatrix("ModelViewMatrix", worldMatrix.multiply(scene.getViewMatrix()));
-      effect.setMatrix("MVP", worldMatrix.multiply(scene.getTransformMatrix()));
+  //     effect.setMatrix("ModelMatrix", worldMatrix);
+  //     effect.setMatrix("ModelViewMatrix", worldMatrix.multiply(scene.getViewMatrix()));
+  //     effect.setMatrix("MVP", worldMatrix.multiply(scene.getTransformMatrix()));
       
-      const normalMatrix = worldMatrix.clone().invert().transpose();
-      // effect.setMatrix3x3("NormalMatrix", normalMatrix);
-       effect.setMatrix("NormalMatrix", normalMatrix);
-      //  effect.setMatrix3x3FromMat4("NormalMatrix", normalMatrix);
+  //     const normalMatrix = worldMatrix.clone().invert().transpose();
+  //     // effect.setMatrix3x3("NormalMatrix", normalMatrix);
+  //      effect.setMatrix("NormalMatrix", normalMatrix);
+  //     //  effect.setMatrix3x3FromMat4("NormalMatrix", normalMatrix);
       
-  };
+  // };
   
   return shaderMaterial;
 };
 
-// Your original working logic for processing meshes, now using the real G-Buffer material
+// my original working logic for processing meshes, now using the real G-Buffer material
 const processAndOrganizeMeshes = (meshes, scene) => {
+  console.log("--- Running FINAL version of processAndOrganizeMeshes ---");
   const allMeshes = meshes.filter(mesh => mesh.geometry);
   const modelRoot = new TransformNode("ModelRoot", scene);
   
@@ -81,16 +86,14 @@ const processAndOrganizeMeshes = (meshes, scene) => {
     Default: createGBufferMaterial(scene)
   };
 
-  // Set the specific GeometryType ID for each material instance
   if (materials.Gums) materials.Gums.setFloat("GeometryType", 1.0);
   if (materials.Teeth) materials.Teeth.setFloat("GeometryType", 2.0);
   if (materials.Brackets) materials.Brackets.setFloat("GeometryType", 3.0);
   if (materials.Default) materials.Default.setFloat("GeometryType", 0.0);
 
-  // Initialize common properties for all materials
   Object.values(materials).forEach(mat => {
       if (mat) {
-           mat.setFloat("EnableClipPlane", 0.0);
+          mat.setFloat("EnableClipPlane", 0.0);
           mat.setVector4("ClipPlane", Vector4.Zero());
           mat.backFaceCulling = false;
       }
@@ -101,7 +104,7 @@ const processAndOrganizeMeshes = (meshes, scene) => {
     mesh.isVisible = true;
     const name = mesh.name.toLowerCase();
     
-    // Assign mesh to a group and give it the group's material instance
+    // Assign mesh to a group AND give it that group's material instance
     if (name.includes('ideal') || name.includes('target') || name.includes('original') || name.includes('initial')) {
       mesh.parent = groups.IdealTeeth;
       mesh.material = materials.Teeth;
@@ -122,9 +125,9 @@ const processAndOrganizeMeshes = (meshes, scene) => {
 
   return { ...groups, MasterRoot: modelRoot };
 };
+ 
 
-
-// Your file loading functions (unchanged from your original working file)
+ 
 const loadGlbFromData = async (glbData, scene, onModelLoadedCallback) => {
   try {
     const objectURL = URL.createObjectURL(glbData);

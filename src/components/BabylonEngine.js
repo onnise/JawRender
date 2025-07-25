@@ -1,22 +1,20 @@
-// --- START OF FILE BabylonEngine.js ---
 
-import { 
-    Engine, 
-    Scene, 
+import {
+    Engine,
+    Scene,
     Vector3,
-    ArcRotateCamera, 
+    ArcRotateCamera,
     MultiRenderTarget,
     Constants,
     Color3
 } from '@babylonjs/core';
 
 export const initBabylon = (canvas) => {
-    // Force the engine to create a WebGL2 context, required by your #version 300 es shaders
+    // Force the engine to create a WebGL2 context
     const engine = new Engine(canvas, true, { "xrCompatible": false, "antialias": true }, true);
-    
+
     const scene = new Scene(engine);
-    // Set a background color for consistency
-    scene.clearColor = Color3.FromHexString('#F0F0FF'); 
+    scene.clearColor = Color3.FromHexString('#F0F0FF');
 
     const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 150, Vector3.Zero(), scene);
     camera.attachControl(canvas, true);
@@ -24,32 +22,32 @@ export const initBabylon = (canvas) => {
     camera.upperRadiusLimit = 500;
     camera.wheelDeltaPercentage = 0.01;
 
-    // Create the G-Buffer with 3 float textures to match your shader's outputs
+    // --- THIS IS THE MISSING PART ---
+    // Create the G-Buffer with 3 float textures
     const gBuffer = new MultiRenderTarget(
-      "gBuffer", 
-      { width: engine.getRenderWidth(), height: engine.getRenderHeight() }, 
-      3, // 3 output textures: gPosition, gNormal, gColor
-      scene, 
+      "gBuffer",
+      { width: engine.getRenderWidth(), height: engine.getRenderHeight() },
+      3, // 3 output textures
+      scene,
       {
-        generateMipMaps: false, 
-        types: [
-            Constants.TEXTURETYPE_FLOAT,
-            Constants.TEXTURETYPE_FLOAT,
-            Constants.TEXTURETYPE_FLOAT,
-        ],
+        generateMipMaps: false,
+        generateDepthBuffer: true,
+        types: [ Constants.TEXTURETYPE_FLOAT,
+           Constants.TEXTURETYPE_FLOAT,
+            Constants.TEXTURETYPE_FLOAT ],
         samplingModes: [
+           Constants.TEXTURE_NEAREST_SAMPLINGMODE,
             Constants.TEXTURE_NEAREST_SAMPLINGMODE,
-            Constants.TEXTURE_NEAREST_SAMPLINGMODE,
-            Constants.TEXTURE_NEAREST_SAMPLINGMODE,
-        ]
+             Constants.TEXTURE_NEAREST_SAMPLINGMODE ]
       }
     );
 
-    // Make the G-Buffer accessible on the scene for post-processes
+    // Attach the G-Buffer to the scene object so PlayerViewer can find it
     scene.gBuffer = gBuffer;
 
-    // This critical line redirects all scene rendering into our G-Buffer textures
+    // Redirect all scene rendering into our G-Buffer
     scene.customRenderTargets.push(gBuffer);
+    // --- END OF MISSING PART ---
 
     return { engine, scene, camera };
 };

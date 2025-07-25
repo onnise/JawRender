@@ -1,102 +1,39 @@
-// --- START OF FILE PlayerViewer.jsx ---
 
-import React, { useEffect, useRef, useCallback, useState } from "react"; 
+
+
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { initBabylon } from "./BabylonEngine";
-import { setupGUI } from "./GUIControls"; 
+import { setupGUI } from "./GUIControls";
 import { initializeCaseLoader } from "./ModelLoader";
 import { exportToGLB, exportToSTL } from "./Exporter";
-import ExportDrawer from "./ExportDrawer"; 
-import { Vector3, PostProcess, Effect, Texture } from "@babylonjs/core";
-
-import gumsShaderCode from '../angel-align/rendering/angel-align-6th-pass-step-2-gums-shader.glsl?raw';
+import ExportDrawer from "./ExportDrawer";
+import { Vector3, Color3, Texture, PostProcess, Effect } from "@babylonjs/core";
 import { parseShaderFile } from "./shaderUtils";
 
+
+import gumsRenderShader from '../angel-align/rendering/gums-render-pass.glsl?raw';
+
 const PlayerViewer = () => {
-  const canvasRef = useRef(null);
-  const activeModelRef = useRef(null); 
-  const modelsRef = useRef(null);
-  const cameraRef = useRef(null);
-  const sceneRef = useRef(null);
-  const guiTextureRef = useRef(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isModelLoaded, setIsModelLoaded] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadError, setLoadError] = useState(null);
+    // All of your original state and refs
+    const canvasRef = useRef(null);
+    const activeModelRef = useRef(null);
+    const modelsRef = useRef(null);
+    const cameraRef = useRef(null);
+    const sceneRef = useRef(null);
+    const guiTextureRef = useRef(null);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isModelLoaded, setIsModelLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [loadError, setLoadError] = useState(null);
 
-  useEffect(() => {
-    // This shader's only job is to display the contents of a G-Buffer texture.
-    // const gBufferDebugShader = `
-    //     #version 300 es
-    //     precision highp float;
-    //     in vec2 vUV;
-    //     out vec4 fragColor;
-    //     uniform sampler2D textureSampler;
-
-    //     void main() {
-    //         vec3 data = texture(textureSampler, vUV).rgb;
-    //         // The 0.5 * 0.5 logic correctly remaps normal vectors to visible colors
-    //         fragColor = vec4(data * 0.5 + 0.5, 1.0);
-    //     }
-    // `;
-    // Effect.ShadersStore["gBufferDebugFragmentShader"] = gBufferDebugShader;
-
-    
-    if (!gumsShaderCode) return;
-    
-    const parsedGumsShader = parseShaderFile(gumsShaderCode);
-    if (!parsedGumsShader) {
-      setLoadError("Could not parse Gums Shader file.");
-      return;
-    }
-
-    // Adapt the Gums material shader into a post-process fragment shader
-    let adaptedFragmentShader = parsedGumsShader.fragment;
-    
-    // Replace varyings with G-Buffer samplers
-    adaptedFragmentShader = adaptedFragmentShader.replace(/varying\s+vec4\s+ecPosition;/g, "uniform sampler2D gBufferPosition;");
-    adaptedFragmentShader = adaptedFragmentShader.replace(/varying\s+vec3\s+ecNormal;/g, "uniform sampler2D gBufferNormal;");
-    adaptedFragmentShader = adaptedFragmentShader.replace(/varying\s+vec2\s+vUv;/g, ""); // vUV is built-in
-    
-    // Add new sampler for GeometryType
-    adaptedFragmentShader = "uniform sampler2D gBufferData;\n" + adaptedFragmentShader;
-
-    // Replace varying usages with texture lookups
-    adaptedFragmentShader = adaptedFragmentShader.replace(/\becPosition\b/g, "texture2D(gBufferPosition, vUV)");
-    adaptedFragmentShader = adaptedFragmentShader.replace(/\becNormal\b/g, "texture2D(gBufferNormal, vUV).rgb");
-    adaptedFragmentShader = adaptedFragmentShader.replace(/\bvUv\b/g, "vUV");
-
-    // Add logic to discard pixels that are not gums
-    const mainFuncBody = `
-        if (clipDistance < 0.0) discard;
-
-        // Read GeometryType from gBufferData (stored in R channel)
-        float geoID = texture2D(gBufferData, vUV).r;
-
-        // Discard if NOT a gum pixel (ID is approx 1.0)
-        if (abs(geoID - 1.0) > 0.1) {
-            discard;
+    // This clean useEffect just stores our pre-converted shader
+    useEffect(() => {
+        if (gumsRenderShader) {
+            Effect.ShadersStore["gumsRenderFragmentShader"] = gumsRenderShader;
+        } else {
+            console.error("The new 'gums-render-pass.glsl' file was not found!");
         }
-
-        // --- Original Shader Logic Starts Here ---
-        if (gl_FrontFacing) {
-            vec3 texelColor = texture2D(diffuseMap, vUV).xyz;
-            vec3 diffuseColor = diffuse*texelColor;
-            vec3 normal = normalize(texture2D(gBufferNormal, vUV).rgb); // simplified normal
-            
-            // Note: Normal mapping part is simplified/removed as it's much more complex in post-process
-            
-            vec3 outgoingLight = Lighting(diffuseColor, normal);
-            gl_FragColor = vec4(outgoingLight, opacity);
-        }
-    `;
-    
-    
-    adaptedFragmentShader = adaptedFragmentShader.replace(/void\s+main\s*\([^)]*\)\s*\{(.|\n)*?\}/g, "void main() {" + mainFuncBody + "}");
-    
-    Effect.ShadersStore["gumsRenderFragmentShader"] = adaptedFragmentShader;
-
-
-  }, []);
+    }, []);
 
   const cleanupPreviousModel = useCallback(() => {
     if (guiTextureRef.current) {
@@ -174,75 +111,73 @@ const PlayerViewer = () => {
         console.log("G-Buffer found. Setting up visualization post-process.");
 
 
+ // 1. Load all textures required by the gums shader
+            const ASSET_PATH = "/assets/";
+            const gumDiffuseTex = new Texture(ASSET_PATH + "angel-align-texture-gums-diffuse.png", scene);
+            const gumReflectTex = new Texture(ASSET_PATH + "angel-align-texture-reflection.png", scene);
+            const gumSpecularTex = new Texture(ASSET_PATH + "angel-align-6th-pass-step-2-gums-texture-specular.png", scene);
+            const gumNormalTex = new Texture(ASSET_PATH + "angel-align-texture-gums-normal.png", scene);
 
-    //     const debugPass = new PostProcess("gBufferDebug", "gBufferDebug", [], ["textureSampler"], 1.0, camera);
-    //     debugPass.onApply = (effect) => {
-           
-    //         effect.setTexture("textureSampler", gBuffer.textures[2]);
-    //     };
-    // } else {
-    //     console.error("G-Buffer not found! Check BabylonEngine.js is creating it.");
-    // }
+            // 2. Create the new PostProcess for the Gums Pass
+            const gumsPass = new PostProcess("gumsRender", "gumsRender",
+                [ // Uniforms list. These must match the new shader EXACTLY.
+                  "diffuse", "opacity", "ambientLightColor", "selfIllumination", "glossiness",
+                  "reflectivity", "shineFactor", "enableTexture",
+                  "pointLights[0].position", "pointLights[0].color",
+                  "pointLights[1].position", "pointLights[1].color",
+                  "pointLights[2].position", "pointLights[2].color"
+                ],
+                [ // Samplers list. Must also match EXACTLY.
+                  "gBufferPosition", "gBufferNormal", "gBufferData",
+                  "diffuseMap", "reflectMap", "specularMap", "normalMap"
+                ],
+            1.0, camera);
 
-      const ASSET_PATH = "/assets/"; // Make sure your texture assets are here
-        const gumDiffuseTex = new Texture(ASSET_PATH + "angel-align-texture-gums-diffuse.png", scene);
-        const gumReflectTex = new Texture(ASSET_PATH + "angel-align-texture-re-reflection.png", scene);
-        const gumSpecularTex = new Texture(ASSET_PATH + "angel-align-6th-pass-step-2-gums-texture-specular.png", scene);
-        const gumNormalTex = new Texture(ASSET_PATH + "angel-align-texture-re-gums-normal.png", scene);
+            // 3. Define lights for the shader to use
+            const pointLights = [
+                { position: new Vector3(100, 200, -150), color: new Color3(0.9, 0.8, 0.7) },
+                { position: new Vector3(-80, -100, 100), color: new Color3(0.5, 0.5, 0.8) },
+                { position: new Vector3(0, -150, -100), color: new Color3(0.4, 0.4, 0.4) },
+            ];
 
-        // Create the new post-process for rendering the gums
-        const gumsPass = new PostProcess("gumsRender", "gumsRender", 
-            [/* shader uniform names */ "opacity", "diffuse", "ambientLightColor", "glossiness", "reflectivity", "shineFactor" /* ...etc... */ ], 
-            [/* sampler names */ "gBufferPosition", "gBufferNormal", "gBufferData", "diffuseMap", "reflectMap", "specularMap", "normalMap"],
-        1.0, camera);
+            // 4. Set up the onApply callback to send ALL data to the shader
+            gumsPass.onApply = (effect) => {
+                // Bind G-Buffer textures
+                effect.setTexture("gBufferPosition", gBuffer.textures[0]);
+                effect.setTexture("gBufferNormal", gBuffer.textures[1]);
+                effect.setTexture("gBufferData", gBuffer.textures[2]);
+                // Bind Gum textures
+                effect.setTexture("diffuseMap", gumDiffuseTex);
+                effect.setTexture("reflectMap", gumReflectTex);
+                effect.setTexture("specularMap", gumSpecularTex);
+                effect.setTexture("normalMap", gumNormalTex);
+                // Set other uniforms
+                effect.setFloat("opacity", 1.0);
+                effect.setVector3("diffuse", new Vector3(1.0, 1.0, 1.0));
+                effect.setVector3("ambientLightColor", new Vector3(0.2, 0.2, 0.25));
+                effect.setFloat("selfIllumination", 0.0);
+                effect.setFloat("glossiness", 0.3);
+                effect.setFloat("reflectivity", 0.4);
+                effect.setFloat("shineFactor", 0.8);
+                effect.setFloat("enableTexture", 1.0); 
+                // Pass light data
+                pointLights.forEach((light, i) => {
+                    effect.setVector3(`pointLights[${i}].position`, light.position);
+                    // effect.setVector3(`pointLights[${i}].color`, light.color.toVector3());
+                    effect.setVector3(`pointLights[${i}].color`, light.color);
+                });
+            };
 
-        // Dummy light data for now
-        const pointLights = [
-            { position: new Vector3(100, 200, 100), color: new Color3(0.8, 0.8, 0.7) },
-            { position: new Vector3(-100, -50, -50), color: new Color3(0.5, 0.5, 0.6) },
-            { position: new Vector3(0, -100, 100), color: new Color3(0.4, 0.4, 0.4) },
-        ];
-        
-        gumsPass.onApply = (effect) => {
-            // Bind G-Buffer textures
-            effect.setTexture("gBufferPosition", gBuffer.textures[0]);
-            effect.setTexture("gBufferNormal", gBuffer.textures[1]);
-            effect.setTexture("gBufferData", gBuffer.textures[2]);
-
-            // Bind Gum textures
-            effect.setTexture("diffuseMap", gumDiffuseTex);
-            effect.setTexture("reflectMap", gumReflectTex);
-            effect.setTexture("specularMap", gumSpecularTex);
-            effect.setTexture("normalMap", gumNormalTex);
-
-            // Set other uniforms (using hardcoded values from a typical PBR material)
-            effect.setFloat("opacity", 1.0);
-            effect.setVector3("diffuse", new Vector3(1.0, 1.0, 1.0));
-            effect.setVector3("ambientLightColor", new Vector3(0.2, 0.2, 0.2));
-            effect.setFloat("glossiness", 0.5);
-            effect.setFloat("reflectivity", 0.8);
-            effect.setFloat("shineFactor", 1.0);
-            effect.setBool("enableTexture", true);
-
-            // Pass light data (note: this part is complex, simplified here)
-            // You'd typically pack this data into arrays.
-            effect.setVector3("pointLights[0].position", pointLights[0].position);
-            effect.setVector3("pointLights[0].color", pointLights[0].color.toVector3());
-            effect.setVector3("pointLights[1].position", pointLights[1].position);
-            effect.setVector3("pointLights[1].color", pointLights[1].color.toVector3());
-            effect.setVector3("pointLights[2].position", pointLights[2].position);
-            effect.setVector3("pointLights[2].color", pointLights[2].color.toVector3());
-        };
-
-    } else {
-        console.error("G-Buffer not found! Cannot set up Gums Render Pass.");
-    }
-
+        } else {
+            console.error("G-Buffer not found! Cannot set up Gums Render Pass.");
+        }
 
 
     const onModelLoaded = (loadedModels) => {
       setLoadError(null);
       setIsLoading(false);
+       //sceneRef.current.debugLayer.show();
+
       requestAnimationFrame(() => {
         try {
           cleanupPreviousModel();
@@ -271,7 +206,7 @@ const PlayerViewer = () => {
       cleanupPreviousModel();
       if(engine) engine.dispose();
     };
-  }, [cleanupPreviousModel, showModel]); // Simplified dependencies for clarity
+  }, [cleanupPreviousModel, showModel]); 
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
