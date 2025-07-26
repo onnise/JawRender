@@ -1,12 +1,110 @@
-# React + Vite
+#  Orthodontic 3D Shader player (React + Vite + Babylon.js)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A real-time 3D model player for orthodontic cases using React, Babylon.js, and GLSL shaders. This project loads `.glb` or `.ztcad` files and renders them with a custom shader pipeline using G-Buffers and PostProcess passes.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+##  Tech Stack
 
-## Expanding the ESLint configuration
+-  **Vite** – blazing-fast dev server
+-  **React** – UI framework
+-  **Babylon.js** – 3D engine
+-  **GLSL shaders** – Custom shader pipeline
+-  **JSZip** – Zip file parsing for `.ztcad` format
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+##  Required Dependencies
+
+This project requires the following NPM packages:
+
+```bash
+npm install
+```
+## Behind the scenes, package.json includes:
+
+
+// (not actual code, just for reference)
+"dependencies": {
+  "@babylonjs/core": "^6.x",
+  "@babylonjs/loaders": "^6.x",
+  "jszip": "^3.x",
+  "react": "^18.x",
+  "react-dom": "^18.x"
+},
+"devDependencies": {
+  "@vitejs/plugin-react": "^4.x",
+  "vite": "^5.x"
+}
+
+##  Getting Started
+
+## 1. Clone the repository
+```bash
+
+git clone https://github.com/leapodonte/PlayerV-0.git
+cd PlayerV-0
+```
+2. Switch to Shader Branch (for latest shader debugging)
+```bash
+
+
+git checkout shader-debug
+```
+## 4. Install all dependencies
+```bash
+
+npm install
+```
+## 4. Start local development server
+```bash
+
+npm run dev
+```
+Then open your browser at:
+```bash
+
+http://localhost:5173
+```
+## How It Works
+This viewer allows you to upload .glb or .ztcad files and visualize them using real-time GPU shaders. The pipeline includes:
+
+ Pass 1: GBuffer Generation
+GLSL Shader: angel-align-1st-pass-shader.glsl
+
+Output: gPosition, gNormal, and gColor (geometry ID)
+
+ Pass 2: Gums Shader PostProcess
+GLSL Shader: gums-render-pass.glsl
+
+Renders only gum parts based on ID from GBuffer
+
+ This stage produces a screen where only gums are visible, all other pixels are discarded.
+
+## Project Structure
+```bash
+src/
+├── BabylonEngine.js           # Babylon Engine + GBuffer setup
+├── ModelLoader.js             # GLB/ZTCAD loading, shader assignment
+├── PlayerViewer.jsx           # Viewer canvas, post-process setup
+├── shaderUtils.js             # Shader parser utility
+└── angel-align/
+    └── rendering/
+        └── angel-align-1st-pass-shader.glsl
+ ```    
+## Shader Compatibility Notes
+ This project uses WebGL 2 (#version 300 es in GLSL)
+
+ Do not mix WebGL 1 shaders (#version 100) — will cause runtime errors
+
+ Babylon Engine initialized with WebGL 2 context
+
+## Contributing
+A dedicated branch shader-debug has been created for shader pipeline development. If you'd like to help, check out:
+
+🔗 https://github.com/leapodonte/PlayerV-0/tree/shader-debug
+
+You can clone, fork, or make pull requests directly into this branch.
+
+
+
