@@ -25,21 +25,21 @@ export const initBabylon = (canvas) => {
     // --- THIS IS THE MISSING PART ---
     // Create the G-Buffer with 3 float textures
     const gBuffer = new MultiRenderTarget(
-      "gBuffer",
-      { width: engine.getRenderWidth(), height: engine.getRenderHeight() },
-      3, // 3 output textures
-      scene,
-      {
-        generateMipMaps: false,
-        generateDepthBuffer: true,
-        types: [ Constants.TEXTURETYPE_FLOAT,
-           Constants.TEXTURETYPE_FLOAT,
-            Constants.TEXTURETYPE_FLOAT ],
-        samplingModes: [
-           Constants.TEXTURE_NEAREST_SAMPLINGMODE,
-            Constants.TEXTURE_NEAREST_SAMPLINGMODE,
-             Constants.TEXTURE_NEAREST_SAMPLINGMODE ]
-      }
+        "gBuffer",
+        { width: engine.getRenderWidth(), height: engine.getRenderHeight() },
+        3, // 3 output textures
+        scene,
+        {
+            generateMipMaps: false,
+            generateDepthBuffer: true,
+            types: [Constants.TEXTURETYPE_FLOAT,
+            Constants.TEXTURETYPE_FLOAT,
+            Constants.TEXTURETYPE_FLOAT],
+            samplingModes: [
+                Constants.TEXTURE_NEAREST_SAMPLINGMODE,
+                Constants.TEXTURE_NEAREST_SAMPLINGMODE,
+                Constants.TEXTURE_NEAREST_SAMPLINGMODE]
+        }
     );
 
     // Attach the G-Buffer to the scene object so PlayerViewer can find it

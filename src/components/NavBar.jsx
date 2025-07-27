@@ -1,4 +1,4 @@
-import "./NavBar.css"; 
+import "./NavBar.css";
 // import Logo from "../public/inbraket-logo.png"
 
 export default function NavBar({ onNavigateToConverter }) {
@@ -17,7 +17,7 @@ export default function NavBar({ onNavigateToConverter }) {
                             <a href="#">Workbench</a>
                             <a href="#">Case</a>
                             <a href="#">Patient</a>
-                          { /* <button onClick={onNavigateToConverter} className="top-button">Converter</button> */}
+                            { /* <button onClick={onNavigateToConverter} className="top-button">Converter</button> */}
                         </div>
 
                         <div className="top-bar">
