@@ -7,65 +7,12 @@ import {
     Effect,
     Vector4,
 } from '@babylonjs/core';
+import * as BABYLON from '@babylonjs/core';
 import '@babylonjs/loaders/glTF';
 import JSZip from 'jszip';
-import { parseShaderFile } from './shaderUtils';
-import gBufferShaderCode from '../angel-align/rendering/angel-align-1st-pass-shader.glsl?raw';
-
-// This function creates the material for our actual G-Buffer shader
-const createGBufferMaterial = (scene) => {
-    console.log("--- Creating REAL G-Buffer Material from external GLSL file ---");
-    const parsedShader = parseShaderFile(gBufferShaderCode);
-    if (!parsedShader) {
-        console.error("Failed to parse G-Buffer shader.");
-        return null;
-    }
-
-    Effect.ShadersStore["gBufferVertexShader"] = parsedShader.vertex;
-    Effect.ShadersStore["gBufferFragmentShader"] = parsedShader.fragment;
-
-    const shaderMaterial = new ShaderMaterial("gBufferMaterial", scene, {
-        vertex: "gBuffer",
-        fragment: "gBuffer"
-    },
-        {
-            attributes: ["position", "normal"],
-            // We MUST declare EVERY uniform that our GLSL shader expects by its exact name
-            // uniforms: [
-            //     "world", "worldView", "worldViewProjection", // Standard Babylon matrices
-            //     "ModelMatrix", "ModelViewMatrix", "NormalMatrix", "MVP", //  custom uniforms
-            //     "GeometryType", "EnableClipPlane", "ClipPlane"
-            // ],
-            uniforms: [
-                "world", "view", "projection", "worldViewProjection", // Babylon will handle these
-                "GeometryType", // Our only custom uniform that we set manually
-            ],
-        });
-
-    // THE "GLUE": This function manually links Babylon's matrices to my shader's custom names
-    // shaderMaterial.onBind = (mesh) => {
-    //     const effect = shaderMaterial.getEffect();
-    //     if (!effect) return;
-
-    //     const worldMatrix = mesh.getWorldMatrix();
-
-    //     effect.setMatrix("ModelMatrix", worldMatrix);
-    //     effect.setMatrix("ModelViewMatrix", worldMatrix.multiply(scene.getViewMatrix()));
-    //     effect.setMatrix("MVP", worldMatrix.multiply(scene.getTransformMatrix()));
-
-    //     const normalMatrix = worldMatrix.clone().invert().transpose();
-    //     // effect.setMatrix3x3("NormalMatrix", normalMatrix);
-    //      effect.setMatrix("NormalMatrix", normalMatrix);
-    //     //  effect.setMatrix3x3FromMat4("NormalMatrix", normalMatrix);
-
-    // };
-
-    return shaderMaterial;
-};
 
 // my original working logic for processing meshes, now using the real G-Buffer material
 const processAndOrganizeMeshes = (meshes, scene) => {
-    console.log("--- Running FINAL version of processAndOrganizeMeshes ---");
     const allMeshes = meshes.filter(mesh => mesh.geometry);
     const modelRoot = new TransformNode("ModelRoot", scene);
 
@@ -79,22 +26,30 @@ const processAndOrganizeMeshes = (meshes, scene) => {
     };
     Object.values(groups).forEach(group => group.parent = modelRoot);
 
+    const defaultMaterial = new BABYLON.PBRMaterial("defaultMaterial", scene);
+    defaultMaterial.albedoColor = BABYLON.Color3.White();     // Pure white
+    defaultMaterial.metallic = 0.0;                           // Non-metallic
+    defaultMaterial.roughness = 1.0;                          // Fully rough (matte)
+    defaultMaterial.backFaceCulling = false;
+    defaultMaterial.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_OPAQUE;
+
+
     const materials = {
-        Gums: createGBufferMaterial(scene),
-        Teeth: createGBufferMaterial(scene),
-        Brackets: createGBufferMaterial(scene),
-        Default: createGBufferMaterial(scene)
+        Gums: defaultMaterial,
+        Teeth: defaultMaterial,
+        Brackets: defaultMaterial,
+        Default: defaultMaterial,
     };
 
-    if (materials.Gums) materials.Gums.setFloat("GeometryType", 1.0);
-    if (materials.Teeth) materials.Teeth.setFloat("GeometryType", 2.0);
-    if (materials.Brackets) materials.Brackets.setFloat("GeometryType", 3.0);
-    if (materials.Default) materials.Default.setFloat("GeometryType", 0.0);
+    // if (materials.Gums) materials.Gums.setFloat("GeometryType", 1.0);
+    // if (materials.Teeth) materials.Teeth.setFloat("GeometryType", 2.0);
+    // if (materials.Brackets) materials.Brackets.setFloat("GeometryType", 3.0);
+    // if (materials.Default) materials.Default.setFloat("GeometryType", 0.0);
 
     Object.values(materials).forEach(mat => {
         if (mat) {
-            mat.setFloat("EnableClipPlane", 0.0);
-            mat.setVector4("ClipPlane", Vector4.Zero());
+            // mat.setFloat("EnableClipPlane", 0.0);
+            // mat.setVector4("ClipPlane", Vector4.Zero());
             mat.backFaceCulling = false;
         }
     });
@@ -103,6 +58,8 @@ const processAndOrganizeMeshes = (meshes, scene) => {
         mesh.setEnabled(true);
         mesh.isVisible = true;
         const name = mesh.name.toLowerCase();
+        mesh.material = defaultMaterial;
+        mesh.parent = groups.Full;
 
         // Assign mesh to a group AND give it that group's material instance
         if (name.includes('ideal') || name.includes('target') || name.includes('original') || name.includes('initial')) {
@@ -117,13 +74,10 @@ const processAndOrganizeMeshes = (meshes, scene) => {
         } else if (name.includes('lower') || name.includes('mandible') || name.includes('guml') || name.includes('teethl') || name.includes('mand')) {
             mesh.parent = groups.Lower;
             mesh.material = materials.Gums;
-        } else {
-            mesh.parent = groups.Full;
-            mesh.material = materials.Default;
         }
     });
 
-    return { ...groups, MasterRoot: modelRoot };
+    return { ...groups, MasterRoot: modelRoot, allMeshes: allMeshes };
 };
 
 

@@ -8,10 +8,13 @@ import { initializeCaseLoader } from "./ModelLoader";
 import { exportToGLB, exportToSTL } from "./Exporter";
 import ExportDrawer from "./ExportDrawer";
 import { Vector3, Color3, Texture, PostProcess, Effect } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { parseShaderFile } from "./shaderUtils";
 
 
 import gumsRenderShader from '../angel-align/rendering/gums-render-pass.glsl?raw';
+import position_normal_color_vs from '../shaders/position_normal_color.vs?raw';
+import position_normal_color_fs from '../shaders/position_normal_color.fs?raw';
 
 const PlayerViewer = () => {
     // All of your original state and refs
@@ -33,6 +36,7 @@ const PlayerViewer = () => {
         } else {
             console.error("The new 'gums-render-pass.glsl' file was not found!");
         }
+
     }, []);
 
     const cleanupPreviousModel = useCallback(() => {
@@ -106,71 +110,88 @@ const PlayerViewer = () => {
         sceneRef.current = scene;
         cameraRef.current = camera;
 
-        const gBuffer = scene.gBuffer;
-        if (gBuffer) {
-            console.log("G-Buffer found. Setting up visualization post-process.");
+        // const screenScene = new BABYLON.Scene(engine);
+        
+        // scene.useOrderIndependentTransparency = true;
 
+        // Ambient (fill) + Directional (key) light combo
+        const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+        hemi.intensity = 0.3;
 
-            // 1. Load all textures required by the gums shader
-            const ASSET_PATH = "/assets/";
-            const gumDiffuseTex = new Texture(ASSET_PATH + "angel-align-texture-gums-diffuse.png", scene);
-            const gumReflectTex = new Texture(ASSET_PATH + "angel-align-texture-reflection.png", scene);
-            const gumSpecularTex = new Texture(ASSET_PATH + "angel-align-6th-pass-step-2-gums-texture-specular.png", scene);
-            const gumNormalTex = new Texture(ASSET_PATH + "angel-align-texture-gums-normal.png", scene);
+        const sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-1, -2, -1), scene);
+        sun.position = new BABYLON.Vector3(10, 20, 10);
+        sun.intensity = 1.0;
 
-            // 2. Create the new PostProcess for the Gums Pass
-            const gumsPass = new PostProcess("gumsRender", "gumsRender",
-                [ // Uniforms list. These must match the new shader EXACTLY.
-                    "diffuse", "opacity", "ambientLightColor", "selfIllumination", "glossiness",
-                    "reflectivity", "shineFactor", "enableTexture",
-                    "pointLights[0].position", "pointLights[0].color",
-                    "pointLights[1].position", "pointLights[1].color",
-                    "pointLights[2].position", "pointLights[2].color"
-                ],
-                [ // Samplers list. Must also match EXACTLY.
-                    "gBufferPosition", "gBufferNormal", "gBufferData",
-                    "diffuseMap", "reflectMap", "specularMap", "normalMap"
-                ],
-                1.0, camera);
+        let position_normal_color_target;
+        {
+            position_normal_color_target = new BABYLON.MultiRenderTarget(
+                "position_normal_color",
+                { width: engine.getRenderWidth(), height: engine.getRenderHeight() },
+                3, // 3 output textures
+                scene,
+                {
+                    defaultType: BABYLON.Engine.TEXTURETYPE_FLOAT,
+                }
+            );
+            position_normal_color_target.activeCamera = camera;
+            position_normal_color_target.renderList = null; // Entire scene
 
-            // 3. Define lights for the shader to use
-            const pointLights = [
-                { position: new Vector3(100, 200, -150), color: new Color3(0.9, 0.8, 0.7) },
-                { position: new Vector3(-80, -100, 100), color: new Color3(0.5, 0.5, 0.8) },
-                { position: new Vector3(0, -150, -100), color: new Color3(0.4, 0.4, 0.4) },
-            ];
+            Effect.ShadersStore["position_normal_colorVertexShader"] = position_normal_color_vs;
+            Effect.ShadersStore["position_normal_colorFragmentShader"] = position_normal_color_fs;
+            const position_normal_color_material = new BABYLON.ShaderMaterial("shader", scene, "position_normal_color", {
+                attributes: ["position", "normal"],
+                uniforms: ["world", "worldViewProjection"],
+            });
 
-            // 4. Set up the onApply callback to send ALL data to the shader
-            gumsPass.onApply = (effect) => {
-                // Bind G-Buffer textures
-                effect.setTexture("gBufferPosition", gBuffer.textures[0]);
-                effect.setTexture("gBufferNormal", gBuffer.textures[1]);
-                effect.setTexture("gBufferData", gBuffer.textures[2]);
-                // Bind Gum textures
-                effect.setTexture("diffuseMap", gumDiffuseTex);
-                effect.setTexture("reflectMap", gumReflectTex);
-                effect.setTexture("specularMap", gumSpecularTex);
-                effect.setTexture("normalMap", gumNormalTex);
-                // Set other uniforms
-                effect.setFloat("opacity", 1.0);
-                effect.setVector3("diffuse", new Vector3(1.0, 1.0, 1.0));
-                effect.setVector3("ambientLightColor", new Vector3(0.2, 0.2, 0.25));
-                effect.setFloat("selfIllumination", 0.0);
-                effect.setFloat("glossiness", 0.3);
-                effect.setFloat("reflectivity", 0.4);
-                effect.setFloat("shineFactor", 0.8);
-                effect.setFloat("enableTexture", 1.0);
-                // Pass light data
-                pointLights.forEach((light, i) => {
-                    effect.setVector3(`pointLights[${i}].position`, light.position);
-                    // effect.setVector3(`pointLights[${i}].color`, light.color.toVector3());
-                    effect.setVector3(`pointLights[${i}].color`, light.color);
-                });
-            };
+            // Store original materials and apply shader
+            const originalMaterials = new Map();
+            let original_useOrderIndependentTransparency = scene.useOrderIndependentTransparency;
 
-        } else {
-            console.error("G-Buffer not found! Cannot set up Gums Render Pass.");
+            position_normal_color_target.onBeforeRenderObservable.add(() => {
+                original_useOrderIndependentTransparency = scene.useOrderIndependentTransparency;
+                scene.useOrderIndependentTransparency = false;
+
+                if (modelsRef.current) {
+                    for (const mesh of modelsRef.current.allMeshes) {
+                        if (mesh.material) {
+                            originalMaterials.set(mesh, mesh.material);
+                            mesh.material = position_normal_color_material;
+                        }
+                    }
+                }
+            })
+
+            // Restore materials after rendering target
+            position_normal_color_target.onAfterUnbindObservable.add(() => {
+                scene.useOrderIndependentTransparency = original_useOrderIndependentTransparency;
+                for (const [mesh, material] of originalMaterials.entries()) {
+                    mesh.material = material;
+                }
+                originalMaterials.clear();
+            });
+
+            scene.customRenderTargets.push(position_normal_color_target);
         }
+
+
+        // const screenCamera = new BABYLON.FreeCamera("orthoCam", new BABYLON.Vector3(0, 0, -10), screenScene);
+        // screenCamera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+        // // Set orthographic frustum to cover the viewport
+        // const width = engine.getRenderWidth();
+        // const height = engine.getRenderHeight();
+        // screenCamera.orthoLeft = -width / 2;
+        // screenCamera.orthoRight = width / 2;
+        // screenCamera.orthoTop = height / 2;
+        // screenCamera.orthoBottom = -height / 2;
+        // screenCamera.setTarget(BABYLON.Vector3.Zero());
+
+        // // Display texture on a plane
+        // const screenPlane = BABYLON.MeshBuilder.CreatePlane("screen", { width: width, height: height }, screenScene);
+        // screenPlane.position.z = 0;
+
+        // const screenMaterial = new BABYLON.StandardMaterial("screenMat", screenScene);
+        // screenMaterial.diffuseTexture = position_normal_color_target.textures[0];
+        // screenPlane.material = screenMaterial;
 
 
         const onModelLoaded = (loadedModels) => {
