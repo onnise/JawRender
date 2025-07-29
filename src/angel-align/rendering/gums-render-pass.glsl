@@ -95,7 +95,7 @@ void main() {
     // Normal mapping is a bit complex in screen space, we can add it later.
     // The key is to correctly transform the normal map's tangents. For now, we skip it.
 
-    //vec3 outgoingLight = Lighting(diffuseColor, finalNormal, ecPosition);
-    //fragColor = vec4(outgoingLight, opacity);
-    fragColor = vec4(0.0, 1.0, 0.0, 1.0); 
+    vec3 outgoingLight = Lighting(diffuseColor, finalNormal, ecPosition);
+    fragColor = vec4(outgoingLight, opacity);
+    //fragColor = vec4(0.0, 1.0, 0.0, 1.0); 
 }
