@@ -39,6 +39,7 @@ void main() {
     discard;
     gPosition = ECPosition;
     gNormal = vec4(normalize(ECNormal), 1.0);
-    gColor = vec4(0.0, 0.0, 0.0, 1.0);
+    // Output the GeometryType in the red channel
+    gColor = vec4(ECPosition.w, 0.0, 0.0, 1.0);
 }
 

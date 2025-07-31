@@ -1,26 +1,36 @@
-import { SceneLoader, TransformNode, ShaderMaterial, Effect, Vector4 } from '@babylonjs/core';
+import { SceneLoader, TransformNode, ShaderMaterial, Effect, Vector4, Constants } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF';
 import JSZip from 'jszip';
 import { parseShaderFile } from './shaderUtils';
 import gBufferShaderCode from '../angel-align/rendering/angel-align-1st-pass-shader.glsl?raw';
 
-const createGBufferMaterial = (scene) => {
+const createGBufferMaterial = (scene, geometryType = 0.0) => {
   const parsedShader = parseShaderFile(gBufferShaderCode);
-  if (!parsedShader) { return null; }
+  if (!parsedShader) { 
+    console.error("Failed to parse G-Buffer shader");
+    return null; 
+  }
 
-  Effect.ShadersStore["gBufferVertexShader"] = parsedShader.vertex;
-  Effect.ShadersStore["gBufferFragmentShader"] = parsedShader.fragment;
+  const materialName = `gBufferMaterial_${geometryType}`;
+  Effect.ShadersStore[`${materialName}VertexShader`] = parsedShader.vertex;
+  Effect.ShadersStore[`${materialName}FragmentShader`] = parsedShader.fragment;
 
-  const shaderMaterial = new ShaderMaterial("gBufferMaterial", scene, {
-      vertex: "gBuffer", fragment: "gBuffer"
+  const shaderMaterial = new ShaderMaterial(materialName, scene, {
+      vertex: materialName, fragment: materialName
   },
   {
     attributes: ["position", "normal"],
-    // UNIFORM LIST IS NOW SIMPLE AND STANDARD!
     uniforms: ["world", "view", "worldViewProjection", "GeometryType"],
   });
   
-  // THE FRAGILE onBind FUNCTION IS GONE!
+  // Critical fixes for G-Buffer rendering
+  shaderMaterial.setFloat("GeometryType", geometryType);
+  shaderMaterial.backFaceCulling = false; // Ensure both sides render
+  shaderMaterial.alphaMode = Constants.ALPHA_DISABLE; // No transparency in G-Buffer
+  shaderMaterial.needDepthPrePass = false;
+  
+  console.log(`Created G-Buffer material with GeometryType: ${geometryType}`);
+  
   return shaderMaterial;
 };
 
@@ -38,28 +48,57 @@ const processAndOrganizeMeshes = (meshes, scene) => {
   Object.values(groups).forEach(group => group.parent = modelRoot);
 
   const materials = {
-    Gums: createGBufferMaterial(scene),
-    Teeth: createGBufferMaterial(scene),
-    Brackets: createGBufferMaterial(scene),
-    Default: createGBufferMaterial(scene)
+    Gums: createGBufferMaterial(scene, 1.0),
+    Teeth: createGBufferMaterial(scene, 2.0),
+    Brackets: createGBufferMaterial(scene, 3.0),
+    Default: createGBufferMaterial(scene, 0.0)
   };
 
-  if (materials.Gums) materials.Gums.setFloat("GeometryType", 1.0);
-  if (materials.Teeth) materials.Teeth.setFloat("GeometryType", 2.0);
-  if (materials.Brackets) materials.Brackets.setFloat("GeometryType", 3.0);
-
   allMeshes.forEach(mesh => {
+    if (!mesh.geometry) return;
+    
     mesh.setEnabled(true);
     const name = mesh.name.toLowerCase();
     
-    if (name.includes('upper') || name.includes('maxilla') || name.includes('gumu')) {
-      mesh.parent = groups.Upper; mesh.material = materials.Gums;
-    } else if (name.includes('lower') || name.includes('mandible') || name.includes('guml')) {
-      mesh.parent = groups.Lower; mesh.material = materials.Gums; // Gums can be lower too
-    } else if (name.includes('teeth')) { // Simple check for teeth
-      mesh.parent = groups.IdealTeeth; mesh.material = materials.Teeth;
+    // Assign to appropriate parent group
+    if (name.includes('gum') || name.includes('gingiva') || name.includes('tissue')) {
+      mesh.parent = name.includes('upper') || name.includes('maxilla') ? groups.Upper : groups.Lower;
+    } else if (name.includes('teeth') || name.includes('tooth') || name.includes('crown') || name.includes('incisor') || name.includes('molar') || name.includes('canine')) {
+      mesh.parent = name.includes('upper') || name.includes('maxilla') ? groups.Upper : groups.Lower;
+    } else if (name.includes('bracket') || name.includes('brace') || name.includes('wire')) {
+      mesh.parent = groups.Brackets;
     } else {
-      mesh.parent = groups.Full; mesh.material = materials.Default;
+      // Default assignment - try to determine if it's upper or lower
+      if (name.includes('upper') || name.includes('maxilla')) {
+        mesh.parent = groups.Upper;
+      } else if (name.includes('lower') || name.includes('mandible')) {
+        mesh.parent = groups.Lower;
+      } else {
+        mesh.parent = groups.Full;
+      }
+    }
+    
+    // Assign materials and GeometryType metadata based on mesh type
+    if (name.includes('gum') || name.includes('gingiva') || name.includes('tissue')) {
+      mesh.material = materials.Gums;
+      mesh.metadata = mesh.metadata || {};
+      mesh.metadata.GeometryType = 1.0; // Gums geometry type
+      console.log(`Assigned gums material to: ${mesh.name} with GeometryType: 1.0`);
+    } else if (name.includes('teeth') || name.includes('tooth') || name.includes('crown') || name.includes('incisor') || name.includes('molar') || name.includes('canine')) {
+      mesh.material = materials.Teeth;
+      mesh.metadata = mesh.metadata || {};
+      mesh.metadata.GeometryType = 2.0; // Teeth geometry type
+      console.log(`Assigned teeth material to: ${mesh.name} with GeometryType: 2.0`);
+    } else if (name.includes('bracket') || name.includes('brace') || name.includes('wire')) {
+      mesh.material = materials.Brackets;
+      mesh.metadata = mesh.metadata || {};
+      mesh.metadata.GeometryType = 3.0; // Brackets geometry type
+      console.log(`Assigned brackets material to: ${mesh.name} with GeometryType: 3.0`);
+    } else {
+      mesh.material = materials.Default;
+      mesh.metadata = mesh.metadata || {};
+      mesh.metadata.GeometryType = 0.0; // Default geometry type
+      console.log(`Assigned default material to: ${mesh.name} with GeometryType: 0.0`);
     }
   });
   return { ...groups, MasterRoot: modelRoot, allMeshes: allMeshes };
@@ -97,11 +136,29 @@ export const initializeCaseLoader = (scene, inputId, onModelLoadedCallback, setL
   const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    
+    console.log("=== LOAD 3D MODEL DEBUG ===");
+    console.log("File selected:", file.name, "Size:", file.size, "bytes");
+    console.log("File type:", file.type);
+    console.log("Scene ready:", scene?.isReady());
+    console.log("Scene meshes count:", scene?.meshes?.length || 0);
+    
     if (setLoading) setLoading(true);
     if (setError) setError(null);
-    try { await loadModel(file, scene, onModelLoadedCallback); } 
-    catch(err) { if (setError) setError(err.message); } 
-    finally { if (setLoading) setLoading(false); event.target.value = ''; }
+    try { 
+      console.log("Starting model load process...");
+      await loadModel(file, scene, onModelLoadedCallback); 
+      console.log("Model load completed successfully");
+    } 
+    catch(err) { 
+      console.error("Model load failed:", err);
+      if (setError) setError(err.message); 
+    } 
+    finally { 
+      if (setLoading) setLoading(false); 
+      event.target.value = ''; 
+      console.log("=== LOAD 3D MODEL DEBUG END ===");
+    }
   };
   fileInput.addEventListener('change', handleFileChange);
   return () => fileInput.removeEventListener('change', handleFileChange);
