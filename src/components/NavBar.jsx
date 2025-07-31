@@ -22,8 +22,8 @@ export default function NavBar({ onNavigateToConverter }) {
 
                         <div className="top-bar">
                             <button className="top-button">return</button>
-                            <select name="" id="" className="top-dropdown">
-                                <option value="" selected>yang sang / qa</option>
+                            <select name="" id="" className="top-dropdown" defaultValue="">
+                                <option value="">yang sang / qa</option>
                             </select>
                             <button className="top-button">share</button>
                         </div>
